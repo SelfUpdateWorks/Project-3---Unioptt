@@ -1,0 +1,24 @@
+{
+  "persona_id": "P001",
+  "name": "Deniz (synthetic)",
+  "age": 18,
+  "citizenship": "Türkiye",
+  "high_school_type": "Anatolian High School",
+  "curriculum": "Turkish national (MEB)",
+  "diploma_grade_100": 86,
+  "gpa_4": 3.4,
+  "has_yks_result": true,
+  "english": { "cefr": "C1", "exam": "IELTS", "score": 7.0 },
+  "german": { "cefr": "B1", "exam": null, "score": null },
+  "budget_eur_per_year": 12000,
+  "scholarship_need": true,
+  "field_of_interest": "Computer Science / AI",
+  "target_intake": "Winter 2027/28",
+  "engine_match": {
+    "program": "University of Groningen, BSc Artificial Intelligence",
+    "label": "Best Fit",
+    "score": 78,
+    "reason": "(synthetic) strong maths and interest in AI",
+    "engine_version": "synthetic-for-demo"
+  }
+}
