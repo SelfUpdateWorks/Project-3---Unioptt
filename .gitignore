@@ -1,0 +1,13 @@
+# Secrets: never upload
+.env
+
+# Python clutter
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Mac clutter
+.DS_Store
+
+# Temporary data the agent downloads while running
+data/cache/
