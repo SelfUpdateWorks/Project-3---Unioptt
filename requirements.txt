@@ -1,0 +1,25 @@
+# Agent framework
+langgraph==1.2.15
+langchain-core==1.6.11
+langchain-openai==1.7.2
+
+# LLM + embeddings
+openai==3.26.1
+
+# Tools
+tavily-python>=0.5
+httpx==0.28.1
+tenacity==9.2.1
+
+# Knowledge base (RAG)
+pinecone==7.3.0
+
+# Data validation (same as Unioptt backend)
+pydantic==2.13.5
+
+# Settings
+python-dotenv==1.2.4
+
+# Small API for n8n (Day 4)
+fastapi==0.143.0
+uvicorn==0.54.0
