@@ -12,8 +12,6 @@
   {"id": "nl_tuition_fees", "title": "Tuition fees", "url": "https://www.studyinnl.org/finances/tuition-fees", "country": "NL", "topic": "costs", "publisher": "Study in NL (Nuffic)"},
   {"id": "nl_cost_of_living", "title": "Daily student expenses and cost of living", "url": "https://www.studyinnl.org/finances/daily-student-expenses-and-cost-of-living-in-the-netherlands", "country": "NL", "topic": "costs", "publisher": "Study in NL (Nuffic)"},
   {"id": "nl_scholarships", "title": "Scholarships", "url": "https://www.studyinnl.org/finances/scholarships", "country": "NL", "topic": "scholarships", "publisher": "Study in NL (Nuffic)"},
-  {"id": "nl_orange_tulip", "title": "Orange Tulip Scholarship", "url": "https://www.nuffic.nl/en/subjects/orange-tulip-scholarship", "country": "NL", "topic": "scholarships", "publisher": "Nuffic"},
   {"id": "nl_turkey_diploma", "title": "Education system Türkiye (diploma comparison)", "url": "https://www.nuffic.nl/en/education-systems/turkey", "country": "NL", "topic": "recognition", "publisher": "Nuffic"},
-  {"id": "nl_student_permit", "title": "Student residence permit (university)", "url": "https://ind.nl/en/residence-permits/study/student-residence-permit-for-university-or-higher-professional-education", "country": "NL", "topic": "visa", "publisher": "IND"},
   {"id": "tr_yok_denklik", "title": "YÖK diploma equivalence application (Denklik Başvurusu)", "url": "https://denklik.yok.gov.tr/tr/page/663", "country": "TR", "topic": "recognition", "publisher": "YÖK"}
 ]
