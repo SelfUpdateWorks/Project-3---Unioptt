@@ -68,7 +68,7 @@ Researching a programme is not a straight line. After finding and reading the of
 
 n8n would be faster for the trigger and delivery, but loops with per-fact state and verification rules are hard to read and test on a visual canvas. So n8n only wraps the agent: form trigger → call the agent's API → Telegram delivery and Airtable run log. No research logic lives in n8n.
 
-Full reasoning: [stack_decision.md](stack_decision.md) *(coming Day 2)*
+Full reasoning: [stack_decision.md](stack_decision.md) 
 
 ## 6. Architecture (happy path)
 
@@ -128,7 +128,7 @@ Target length: sections 0–7 on about one page; section 8 has no length limit.
 
 ```
 ├── README.md
-├── stack_decision.md         (Day 2)
+├── stack_decision.md         
 ├── gtm_future_sprints.md     (Day 4)
 ├── requirements.txt
 ├── .env.example              (keys needed, empty values)

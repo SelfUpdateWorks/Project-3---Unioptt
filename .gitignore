@@ -14,3 +14,6 @@ data/cache/
 
 # Downloaded reference pages (third-party content, rebuilt with build_corpus)
 corpus/*.md
+
+# Editor settings
+.vscode/
