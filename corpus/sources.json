@@ -1,0 +1,19 @@
+[
+  {"id": "de_admission_overview", "title": "Admission requirements overview", "url": "https://www.daad.de/en/studying-in-germany/requirements/overview/", "country": "DE", "topic": "admission", "publisher": "DAAD"},
+  {"id": "de_entrance_qualification", "title": "University entrance qualification", "url": "https://www.study-in-germany.de/en/plan-your-studies/requirements/entrance-qualification/", "country": "DE", "topic": "recognition", "publisher": "Study in Germany (DAAD)"},
+  {"id": "de_studienkolleg", "title": "Studienkollegs (foundation courses)", "url": "https://www.daad.de/en/studying-in-germany/requirements/studienkollegs/", "country": "DE", "topic": "recognition", "publisher": "DAAD"},
+  {"id": "de_language_skills", "title": "Language skills for studying in Germany", "url": "https://www.study-in-germany.de/en/plan-your-studies/requirements/language-skills/", "country": "DE", "topic": "language", "publisher": "Study in Germany (DAAD)"},
+  {"id": "de_application_process", "title": "Application process", "url": "https://www.daad.de/en/studying-in-germany/requirements/application-process/", "country": "DE", "topic": "application", "publisher": "DAAD"},
+  {"id": "de_uni_assist", "title": "How to apply via uni-assist", "url": "https://www.uni-assist.de/en/how-to-apply/", "country": "DE", "topic": "application", "publisher": "uni-assist"},
+  {"id": "de_proof_of_financing", "title": "Proof of financing (blocked account)", "url": "https://www.study-in-germany.de/en/plan-your-studies/requirements/proof-of-financing/", "country": "DE", "topic": "costs", "publisher": "Study in Germany (DAAD)"},
+  {"id": "de_money_and_costs", "title": "Money and costs", "url": "https://www.study-in-germany.de/en/plan-your-stay/money-and-costs/", "country": "DE", "topic": "costs", "publisher": "Study in Germany (DAAD)"},
+  {"id": "de_scholarships", "title": "Scholarships for studying in Germany", "url": "https://www.daad.de/en/studying-in-germany/scholarships/", "country": "DE", "topic": "scholarships", "publisher": "DAAD"},
+  {"id": "nl_how_to_apply", "title": "How to apply", "url": "https://www.studyinnl.org/plan-your-stay/how-to-apply", "country": "NL", "topic": "application", "publisher": "Study in NL (Nuffic)"},
+  {"id": "nl_tuition_fees", "title": "Tuition fees", "url": "https://www.studyinnl.org/finances/tuition-fees", "country": "NL", "topic": "costs", "publisher": "Study in NL (Nuffic)"},
+  {"id": "nl_cost_of_living", "title": "Daily student expenses and cost of living", "url": "https://www.studyinnl.org/finances/daily-student-expenses-and-cost-of-living-in-the-netherlands", "country": "NL", "topic": "costs", "publisher": "Study in NL (Nuffic)"},
+  {"id": "nl_scholarships", "title": "Scholarships", "url": "https://www.studyinnl.org/finances/scholarships", "country": "NL", "topic": "scholarships", "publisher": "Study in NL (Nuffic)"},
+  {"id": "nl_orange_tulip", "title": "Orange Tulip Scholarship", "url": "https://www.nuffic.nl/en/subjects/orange-tulip-scholarship", "country": "NL", "topic": "scholarships", "publisher": "Nuffic"},
+  {"id": "nl_turkey_diploma", "title": "Education system Türkiye (diploma comparison)", "url": "https://www.nuffic.nl/en/education-systems/turkey", "country": "NL", "topic": "recognition", "publisher": "Nuffic"},
+  {"id": "nl_student_permit", "title": "Student residence permit (university)", "url": "https://ind.nl/en/residence-permits/study/student-residence-permit-for-university-or-higher-professional-education", "country": "NL", "topic": "visa", "publisher": "IND"},
+  {"id": "tr_yok_denklik", "title": "YÖK diploma equivalence application (Denklik Başvurusu)", "url": "https://denklik.yok.gov.tr/tr/page/663", "country": "TR", "topic": "recognition", "publisher": "YÖK"}
+]

@@ -11,3 +11,6 @@ __pycache__/
 
 # Temporary data the agent downloads while running
 data/cache/
+
+# Downloaded reference pages (third-party content, rebuilt with build_corpus)
+corpus/*.md
