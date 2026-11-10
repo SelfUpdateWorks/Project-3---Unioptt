@@ -2,7 +2,7 @@
 
 > Project 3 · Ironhack AI Consulting Bootcamp (Berlin) · Approved by instructor
 >
-> Status: 🚧 Day 1 of 5
+> Status: 🚧 Day 2 of 5 · tools, RAG knowledge base and LangGraph skeleton working
 
 An autonomous research agent that checks the facts about one university programme and writes a **Programme Due Diligence Report** for a Turkish student and their family. Every key fact carries a **value, a verification status and a source link**, and anything the agent cannot confirm is marked as such instead of guessed.
 
