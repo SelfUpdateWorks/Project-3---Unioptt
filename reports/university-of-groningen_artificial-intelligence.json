@@ -1,0 +1,350 @@
+{
+  "programme": {
+    "university": "University of Groningen",
+    "name": "Artificial Intelligence",
+    "degree": "bachelor",
+    "country": "NL",
+    "domain": "rug.nl"
+  },
+  "intake": "Winter 2027/28",
+  "report_date": "2026-11-11",
+  "profile_id": "P001",
+  "engine_match_quoted": {
+    "program": "University of Groningen, BSc Artificial Intelligence",
+    "label": "Best Fit",
+    "score": 78,
+    "reason": "(synthetic) strong maths and interest in AI",
+    "engine_version": "synthetic-for-demo"
+  },
+  "requirements": {
+    "language": {
+      "value": "One of 5 accepted English tests.",
+      "options": [
+        {
+          "kind": "requirement",
+          "option": "Cambridge English: C1 Advanced (CAE) or C2 Proficiency (CPE) with a min. score of 180",
+          "quote": "Cambridge English: C1 Advanced (CAE) or C2 Proficiency (CPE) with a min. score of 180"
+        },
+        {
+          "kind": "requirement",
+          "option": "IELTS (Academic): overall score 6.5 (min. 6.5 in every category)",
+          "quote": "IELTS (Academic): overall score 6.5 (min. 6.5 in every category)"
+        },
+        {
+          "kind": "requirement",
+          "option": "LanguageCert Academic: overall score 70 (min. 70 in every category)",
+          "quote": "LanguageCert Academic: overall score 70 (min. 70 in every category)"
+        },
+        {
+          "kind": "requirement",
+          "option": "Pearson PTE Academic: overall score 66 (min. 64 in Reading, 58 in Listening and Speaking, and 70 in Writing)",
+          "quote": "Pearson PTE Academic: overall score 66 (min. 64 in Reading, 58 in Listening and Speaking, and 70 in Writing)"
+        },
+        {
+          "kind": "requirement",
+          "option": "TOEFL iBT: overall score 90 (min. 21 in Reading, Listening, and Speaking, 24 in Writing)",
+          "quote": "TOEFL iBT*: overall score 90 (min. 21 in Reading, Listening, and Speaking, 24 in Writing)"
+        }
+      ],
+      "complete": true,
+      "verification": {
+        "status": "Needs Review",
+        "source": "official",
+        "source_url": "https://www.rug.nl/education/application-enrolment-tuition-fees/admission/non-dutch-qualification/bachelor/bachelor-entry-requirements/language-requirements-and-exemptions",
+        "last_verified": "2026-11-11",
+        "confidence": "medium",
+        "notes": "Failed: right_intake. Quote: \"We accept the following language tests:\""
+      }
+    },
+    "academic": {
+      "value": "Lise Diploması with at least 4 content-based AP courses externally examined by the College Board (grades 3-5)",
+      "options": [
+        {
+          "kind": "requirement",
+          "option": "Lise Diploması with at least 4 content-based AP courses externally examined by the College Board (grades 3-5)",
+          "quote": "*   Lise Diploması with at least 4 content-based* AP courses externally examined by the College Board (grades 3-5)"
+        }
+      ],
+      "complete": true,
+      "verification": {
+        "status": "Verified",
+        "source": "official",
+        "source_url": "https://www.rug.nl/education/application-enrolment-tuition-fees/admission/non-dutch-qualification/bachelor/bachelor-entry-requirements/bachelorlinkscountry/turkey",
+        "last_verified": "2026-11-11",
+        "confidence": "high",
+        "notes": "Quote: \"*   Lise Diploması with at least 4 content-based* AP courses externally examined by the College Board (grades 3-5)\""
+      }
+    },
+    "application_deadlines": {
+      "value": "01 May 2027",
+      "options": [],
+      "complete": true,
+      "verification": {
+        "status": "Verified",
+        "source": "official",
+        "source_url": "https://www.rug.nl/bachelors/artificial-intelligence/?lang=en",
+        "last_verified": "2026-11-11",
+        "confidence": "high",
+        "notes": "Quote: \"non-EU/EEA students | 01 May 2027 | 01 September 2027\""
+      }
+    },
+    "application_platform": {
+      "value": "International students apply via the Studielink tool.",
+      "verification": {
+        "status": "Inferred",
+        "source": "country_default",
+        "source_url": "https://www.studyinnl.org/plan-your-stay/how-to-apply",
+        "last_verified": "2026-11-11",
+        "confidence": "low",
+        "notes": "National rule from the curated library, applied to this programme"
+      }
+    },
+    "financial": {
+      "tuition_non_eu": {
+        "value": "€19800 per year",
+        "options": [],
+        "complete": true,
+        "verification": {
+          "status": "Verified",
+          "source": "official",
+          "source_url": "https://www.rug.nl/bachelors/artificial-intelligence/?lang=en",
+          "last_verified": "2026-11-11",
+          "confidence": "high",
+          "notes": "Quote: \"non-EU/EEA | 2027-2028 | €19800 | full-time\""
+        }
+      },
+      "yearly_cost": {
+        "tuition_eur": 19800,
+        "tuition_status": "Verified",
+        "living_eur_per_month": 1285,
+        "living_eur_per_year": 15420,
+        "total_eur": 35220,
+        "eur_try": 55.8897,
+        "rate_date": "2026-11-11",
+        "rate_source": "https://api.frankfurter.dev/v1/latest?base=EUR&symbols=TRY",
+        "tuition_try": 1106616,
+        "living_try": 861819,
+        "total_try": 1968435,
+        "status": "Inferred"
+      },
+      "living_cost_source": {
+        "monthly_eur": 1285,
+        "quote": "*   Rent: € 561\n*   Groceries: € 244\n*   Study books and materials: € 41\n*   Transportation: € 67\n*   Leisure and sports: € 239\n*   Basic Dutch health insurance (when working in NL): € 133",
+        "source_url": "https://www.studyinnl.org/finances/daily-student-expenses-and-cost-of-living-in-the-netherlands",
+        "source_title": "Daily student expenses and cost of living",
+        "status": "Inferred"
+      }
+    },
+    "portfolio": null,
+    "interview": null,
+    "required_documents": null
+  },
+  "programme_facts": {
+    "teaching_language": {
+      "value": "English",
+      "options": [],
+      "complete": true,
+      "verification": {
+        "status": "Verified",
+        "source": "official",
+        "source_url": "https://www.rug.nl/bachelors/artificial-intelligence/?lang=en",
+        "last_verified": "2026-11-11",
+        "confidence": "high",
+        "notes": "Quote: \"Language of instruction English\""
+      }
+    },
+    "duration": {
+      "value": "36 months (180 EC)",
+      "options": [],
+      "complete": true,
+      "verification": {
+        "status": "Verified",
+        "source": "official",
+        "source_url": "https://www.rug.nl/bachelors/artificial-intelligence/?lang=en",
+        "last_verified": "2026-11-11",
+        "confidence": "high",
+        "notes": "Quote: \"Duration 36 months (180 EC)\""
+      }
+    },
+    "mandatory_placement": {
+      "value": null,
+      "options": [],
+      "complete": false,
+      "verification": {
+        "status": "Unknown",
+        "source": "unknown",
+        "source_url": null,
+        "last_verified": null,
+        "confidence": "none",
+        "notes": "Not found on official pages after 4 search rounds"
+      }
+    },
+    "thesis_required": {
+      "value": "Bachelor's Project (15 EC) is required",
+      "options": [],
+      "complete": true,
+      "verification": {
+        "status": "Verified",
+        "source": "official",
+        "source_url": "https://www.rug.nl/bachelors/artificial-intelligence/?lang=en",
+        "last_verified": "2026-11-11",
+        "confidence": "high",
+        "notes": "Quote: \"Bachelor's Project (15 EC)\""
+      }
+    },
+    "scholarships": {
+      "value": "Several scholarships are available for international students who are motivated to study Bachelor’s, Master’s and PhD programmes.",
+      "options": [],
+      "complete": false,
+      "verification": {
+        "status": "Needs Review",
+        "source": "official",
+        "source_url": "https://www.rug.nl/education/scholarships/findscholarshipsbackup?lang=en",
+        "last_verified": "2026-11-11",
+        "confidence": "medium",
+        "notes": "Failed: incomplete. Quote: \"Several scholarships are available for international students who are motivated to study Bachelor’s, Master’s and PhD programmes, as well as for exchanges, short courses and research stays at our university.\""
+      }
+    }
+  },
+  "country_rules": [
+    {
+      "topic": "Recognition of the Turkish diploma",
+      "question": "How is a Turkish high-school diploma (Lise Diploması) assessed for bachelor admission in the Netherlands? Is a foundation year or Studienkolleg needed?",
+      "points": [],
+      "status": "Unknown",
+      "verification": {
+        "status": "Unknown",
+        "source": "unknown",
+        "source_url": null,
+        "last_verified": "2026-11-11",
+        "confidence": "none",
+        "notes": "No answer found in the curated library"
+      }
+    },
+    {
+      "topic": "How to apply",
+      "question": "How do international students apply for a bachelor's programme in the Netherlands: which portal, which steps?",
+      "points": [
+        {
+          "point": "International students apply via the Studielink tool.",
+          "quote": "Studielink is the official registration and application portal for programmes at Dutch higher education institutions.",
+          "source_url": "https://www.studyinnl.org/plan-your-stay/how-to-apply",
+          "source_title": "How to apply"
+        },
+        {
+          "point": "Check with the institution whether you need to register via Studielink.",
+          "quote": "you should first check with the institution of your choice whether you are required to register via Studielink.",
+          "source_url": "https://www.studyinnl.org/plan-your-stay/how-to-apply",
+          "source_title": "How to apply"
+        },
+        {
+          "point": "Application deadlines are 15 January for numerus fixus programmes and 1 May for all other programmes.",
+          "quote": "15 January for a numerus fixus programme\n*   1 May for all other study programmes.",
+          "source_url": "https://www.studyinnl.org/plan-your-stay/how-to-apply",
+          "source_title": "How to apply"
+        }
+      ],
+      "status": "Inferred",
+      "verification": {
+        "status": "Inferred",
+        "source": "country_default",
+        "source_url": "https://www.studyinnl.org/plan-your-stay/how-to-apply",
+        "last_verified": "2026-11-11",
+        "confidence": "low",
+        "notes": "National rule from the curated library, applied to this programme"
+      }
+    },
+    {
+      "topic": "National scholarships",
+      "question": "Which national scholarships exist for non-EU bachelor students in the Netherlands?",
+      "points": [
+        {
+          "point": "The MENA Scholarship Programme (MSP) is available.",
+          "quote": "*   MENA Scholarship Programme (MSP)\"",
+          "source_url": "https://www.studyinnl.org/finances/scholarships",
+          "source_title": "Scholarships"
+        },
+        {
+          "point": "The NL scholarship (Holland Scholarship) is available.",
+          "quote": "*   NL scholarship (Holland Scholarship)\"",
+          "source_url": "https://www.studyinnl.org/finances/scholarships",
+          "source_title": "Scholarships"
+        }
+      ],
+      "status": "Inferred",
+      "verification": {
+        "status": "Inferred",
+        "source": "country_default",
+        "source_url": "https://www.studyinnl.org/finances/scholarships",
+        "last_verified": "2026-11-11",
+        "confidence": "low",
+        "notes": "National rule from the curated library, applied to this programme"
+      }
+    },
+    {
+      "topic": "Recognition back in Türkiye (YÖK)",
+      "question": "How is a foreign university degree recognised in Türkiye (YÖK denklik), and what does it cost?",
+      "points": [
+        {
+          "point": "Foreign university degrees can be recognized in Türkiye through a formal application process.",
+          "quote": "Yurt dışındaki üniversitelerin ön lisans, lisans ya da yüksek lisans programlarından mezun Türkiye Cumhuriyeti vatandaşları.",
+          "source_url": "https://denklik.yok.gov.tr/tr/page/663",
+          "source_title": "YÖK diploma equivalence application (Denklik Başvurusu)"
+        },
+        {
+          "point": "There are specific fees for the recognition process set for the year 2026.",
+          "quote": "2026 yılı için aşağıda belirtilen ücretlerin alınmasına karar verilmiştir.",
+          "source_url": "https://denklik.yok.gov.tr/tr/page/663",
+          "source_title": "YÖK diploma equivalence application (Denklik Başvurusu)"
+        },
+        {
+          "point": "Applicants must provide proof of payment for the application fee.",
+          "quote": "Başvuru ücretinin yatırıldığını gösteren dekont.",
+          "source_url": "https://denklik.yok.gov.tr/tr/page/663",
+          "source_title": "YÖK diploma equivalence application (Denklik Başvurusu)"
+        }
+      ],
+      "status": "Inferred",
+      "verification": {
+        "status": "Inferred",
+        "source": "country_default",
+        "source_url": "https://denklik.yok.gov.tr/tr/page/663",
+        "last_verified": "2026-11-11",
+        "confidence": "low",
+        "notes": "National rule from the curated library, applied to this programme"
+      }
+    }
+  ],
+  "readiness": [
+    {
+      "area": "English",
+      "status": "check",
+      "finding": "IELTS 7.0 overall meets 6.5 ✓ — but each section must be at least 6.5. Your section scores are not in the profile.",
+      "fact_status": "Needs Review"
+    },
+    {
+      "area": "Diploma",
+      "status": "gap",
+      "finding": "Your diploma (Anatolian High School) alone is not enough: the rule also asks for AP courses (College Board). Your profile shows none.",
+      "fact_status": "Verified"
+    },
+    {
+      "area": "Budget",
+      "status": "gap",
+      "finding": "Tuition + living costs = €35,220/year (≈ ₺1,968,435); your budget is €12,000. Shortfall: €23,220/year (≈ ₺1,297,759).",
+      "fact_status": "Verified"
+    },
+    {
+      "area": "Deadline",
+      "status": "met",
+      "finding": "Apply by 01 May 2027: 171 days from today. Language tests and documents must be ready before then.",
+      "fact_status": "Verified"
+    },
+    {
+      "area": "Scholarship",
+      "status": "check",
+      "finding": "You need a scholarship. No programme scholarship was found; see the national scholarships in section 5.",
+      "fact_status": "Unknown"
+    }
+  ]
+}
