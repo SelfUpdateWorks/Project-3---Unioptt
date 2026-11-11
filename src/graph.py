@@ -1,6 +1,6 @@
 """
 graph.py — The LangGraph skeleton of the Programme Research Agent.
-Boxes 1–4 are real (search, read, extract, follow links). Boxes 5 and 7–10 are still STUBs.
+Boxes 1–5 are real (search, read, extract, follow links, verify). Boxes 7–10 are still STUBs.
 """
 
 import operator
@@ -12,6 +12,8 @@ from langgraph.graph import END, START, StateGraph
 
 from src.extract import extract_from_page
 from src.tools import ToolError, read_page, search_web
+from src.schemas import VerificationRecord
+from src.verify import verify_fact
 
 # The key facts every report must try to verify (Tier 1)
 KEY_FACTS = [
@@ -63,7 +65,8 @@ class AgentState(TypedDict, total=False):
     seen_urls: list          # all pages found so far (never read twice)
     todo_links: list         # official "more info" links to follow next
     faculty: str             # faculty that runs the programme (found on a page)
-    pages: list              # downloaded page texts
+    pages: list              # pages downloaded in this round
+    page_texts: dict         # url -> text of EVERY page read so far (box 5 checks quotes here)
     facts: dict              # fact name -> {value, quote, source_url, status}
     missing: list            # key facts still not found
     country_rules: list      # RAG results (admission / recognition)
@@ -178,7 +181,8 @@ def read_pages(state: AgentState) -> dict:                          # box 3
     log += [f"     ✗ {u}" for u in failed]
     # Remember the final addresses too, so a redirected page is never read twice
     seen = state["seen_urls"] + [p["url"] for p in pages if p["url"] not in state["seen_urls"]]
-    return {"pages": pages, "seen_urls": seen, "log": log}
+    texts = {**state.get("page_texts", {}), **{p["url"]: p["text"] for p in pages}}
+    return {"pages": pages, "seen_urls": seen, "page_texts": texts, "log": log}
 
 
 def start_year(text: str | None) -> int | None:
@@ -282,11 +286,19 @@ def extract_facts(state: AgentState) -> dict:                       # box 4
 
 
 def check_facts(state: AgentState) -> dict:                         # box 5
-    facts = {name: {**f, "status": "Needs Review"} for name, f in state["facts"].items()}
+    """Python runs the 4 verification checks on every fact (see verify.py)."""
+    domain = state["programme"]["domain"]
+    facts = {}
+    for name, f in state["facts"].items():
+        page_text = state["page_texts"].get(f["source_url"], "")
+        facts[name] = {**f, **verify_fact(f, page_text, domain)}
     # Missing = not found at all, OR found but incomplete (details are on another page)
     missing = [n for n in KEY_FACTS if n not in facts or not facts[n]["complete"]]
+    counts = {s: sum(1 for f in facts.values() if f["status"] == s)
+              for s in ("Verified", "Needs Review", "Inferred")}
     return {"facts": facts, "missing": missing,
-            "log": [f"5 check_facts: missing or incomplete = {missing or 'none'} (STUB rules)"]}
+            "log": [f"5 check_facts: {counts['Verified']} Verified, {counts['Needs Review']} Needs Review, "
+                    f"{counts['Inferred']} Inferred · missing or incomplete = {missing or 'none'}"]}
 
 
 def route_after_check(state: AgentState) -> str:                    # box 6 (decision)
@@ -302,7 +314,11 @@ def mark_unknown(state: AgentState) -> dict:
     for name in unknown:
         facts[name] = {"value": None, "quote": None, "options": [], "complete": False,
                        "source_url": None, "page_year": None, "freshness": "unknown",
-                       "status": "Unknown"}
+                       "status": "Unknown", "checks": {},
+                       "verification": VerificationRecord(
+                           status="Unknown", source="unknown", confidence="none",
+                           notes=f"Not found on official pages after {MAX_ATTEMPTS} search rounds"
+                       ).model_dump()}
     incomplete = [n for n in state["missing"] if n not in unknown]
     return {"facts": facts,
             "log": [f"6 decision: continue ({len(unknown)} Unknown, {len(incomplete)} still incomplete)"]}
@@ -332,6 +348,8 @@ def write_report(state: AgentState) -> dict:                        # box 10
         lines.append(f"**Value:** {f['value']}")
         for o in f["options"]:
             lines.append(f"- [{o['kind']}] {o['option']}")
+        if f["checks"]:
+            lines.append("Checks: " + " · ".join(f"{'✓' if ok else '✗'} {c}" for c, ok in f["checks"].items()))
         if f["source_url"]:
             lines.append(f"Source: {f['source_url']} (page year: {f['page_year'] or '?'}, {f['freshness']})")
             lines.append(f"Quote: \"{(f['quote'] or '')[:150]}\"")
