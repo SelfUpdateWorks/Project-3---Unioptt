@@ -8,6 +8,9 @@ from typing import Annotated, TypedDict
 
 from langgraph.graph import END, START, StateGraph
 
+
+from src.tools import ToolError, search_web
+
 # The key facts every report must try to verify (Tier 1)
 KEY_FACTS = [
     "teaching_language",
@@ -21,6 +24,24 @@ KEY_FACTS = [
 ]
 MAX_ATTEMPTS = 3  # how many search rounds before a fact becomes "Unknown"
 
+# Extra search words for each fact, used when that fact is still missing
+FACT_QUERIES = {
+    "teaching_language": "language of instruction",
+    "duration": "programme duration years ECTS",
+    "tuition_non_eu": "tuition fee non-EU students",
+    "application_deadline": "application deadline",
+    "language_requirement": "English language requirements IELTS TOEFL",
+    "academic_requirement": "admission requirements international diploma",
+    "mandatory_placement": "internship placement",
+    "thesis_required": "bachelor thesis",
+}
+
+# Words in a page address or title that mean "wrong degree level"
+WRONG_DEGREE_WORDS = {
+    "bachelor": ["master", "msc", "phd", "pre-master"],
+    "master": ["bachelor", "bsc", "phd"],
+}
+
 
 # ---------- The shared state: the agent's "notebook" ----------
 
@@ -30,6 +51,7 @@ class AgentState(TypedDict, total=False):
     profile: dict            # synthetic student profile
     attempts: int            # how many search rounds so far
     candidate_urls: list     # pages found by search
+    seen_urls: list
     pages: list              # downloaded page texts
     facts: dict              # fact name -> {value, quote, source_url, status}
     missing: list            # key facts still not found
@@ -48,11 +70,56 @@ def load_input(state: AgentState) -> dict:                          # box 1
             "log": [f"1 load_input: {p['university']} – {p['name']}, {state['intake']}"]}
 
 
+def is_wrong_degree(result: dict, degree: str) -> bool:
+    """True if the address or title points to another degree level (e.g. a Master's page)."""
+    text = (result["url"] + " " + result["title"]).lower()
+    return any(word in text for word in WRONG_DEGREE_WORDS.get(degree, []))
+
+def is_other_programme(result: dict, programme: dict) -> bool:
+    """True if the page is about a different programme at the same level.
+    Example: /bachelors/computing-science when we want /bachelors/artificial-intelligence."""
+    url = result["url"].lower()
+    slug = programme["name"].lower().replace(" ", "-")   # "artificial-intelligence"
+    return programme["degree"] in url and slug not in url
+
+
 def find_official_page(state: AgentState) -> dict:                  # box 2
+    p = state["programme"]
     attempts = state["attempts"] + 1
+    seen = state.get("seen_urls", [])
+    base = f"{p['university']} {p['degree']} {p['name']}"
+
+    # Round 1: one general search. Later rounds: one search per missing fact (max 3).
+    if attempts == 1:
+        queries = [f"{base} admission requirements tuition fees"]
+    else:
+        queries = [f"{base} {FACT_QUERIES[f]}" for f in state["missing"][:3]]
+
+    # Search only the university's own website, except in the last round
+    domains = [p["domain"]] if attempts < MAX_ATTEMPTS else None
+
+    found, rejected = [], []
+    for q in queries:
+        try:
+            results = search_web(q, max_results=5, include_domains=domains)
+        except ToolError:
+            continue                      # no results for this query: try the next one
+        for r in results:
+            if r["url"] in seen or r["url"] in found:
+                continue                  # already have it
+            if is_wrong_degree(r, p["degree"]) or is_other_programme(r, p):
+                rejected.append(r["url"])
+                continue
+            found.append(r["url"])
+
+    candidates = found[:3]                # read at most 3 new pages per round
+    where = p["domain"] if domains else "whole web"
     return {"attempts": attempts,
-            "candidate_urls": ["https://example.org/STUB-official-page"],
-            "log": [f"2 find_official_page: search round {attempts} (STUB)"]}
+            "candidate_urls": candidates,
+            "seen_urls": seen + candidates,
+            "log": [f"2 find_official_page: round {attempts} on {where}, "
+                    f"{len(candidates)} new page(s), {len(rejected)} rejected (wrong degree or programme)"]
+                   + [f"     → {u}" for u in candidates]}
 
 
 def read_pages(state: AgentState) -> dict:                          # box 3
@@ -61,6 +128,8 @@ def read_pages(state: AgentState) -> dict:                          # box 3
 
 
 def extract_facts(state: AgentState) -> dict:                       # box 4
+    if not state["pages"]:
+        return {"log": ["4 extract_facts: no pages to read (STUB)"]}
     # STUB: pretend tuition is only found in round 2, so the loop runs once
     found = [f for f in KEY_FACTS if f != "tuition_non_eu" or state["attempts"] >= 2]
     facts = dict(state["facts"])

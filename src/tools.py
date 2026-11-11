@@ -27,18 +27,21 @@ def _get_key(name: str) -> str:
 # ── Tool 1: web search (Tavily) ──────────────────────────────────────────────
 
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(min=1, max=8), reraise=True)
-def _tavily_call(query: str, max_results: int) -> dict:
+def _tavily_call(query: str, max_results: int, include_domains: list[str] | None) -> dict:
     client = TavilyClient(api_key=_get_key("TAVILY_API_KEY"))
-    return client.search(query=query, max_results=max_results)
+    return client.search(query=query, max_results=max_results,
+                         include_domains=include_domains or [])
 
 
-def search_web(query: str, max_results: int = 5) -> list[dict]:
-    """Search the web. Returns a list of {title, url, snippet}."""
+def search_web(query: str, max_results: int = 5,
+               include_domains: list[str] | None = None) -> list[dict]:
+    """Search the web. Returns a list of {title, url, snippet}.
+    include_domains=["rug.nl"] searches only on that website."""
     if not query.strip():
         raise ValueError("Search query is empty.")
 
     try:
-        response = _tavily_call(query, max_results)
+        response = _tavily_call(query, max_results, include_domains)
     except ToolError:
         raise
     except Exception as e:

@@ -21,8 +21,10 @@ def main() -> None:
     result = app.invoke({
         "programme": {
             "university": "University of Groningen",
-            "name": "BSc Artificial Intelligence",
+            "name": "Artificial Intelligence",
+            "degree": "bachelor",
             "country": "NL",
+            "domain": "rug.nl",
         },
         "intake": profile["target_intake"],
         "profile": profile,
