@@ -37,9 +37,9 @@ class Fact(BaseModel):
                     "condition listed on the page that applies to this student and faculty. "
                     "Empty list if the fact has a single value (e.g. duration).")
     detail_link: Optional[str] = Field(
-        description="If complete is false: the full URL of the link on this page that leads to the "
-                    "details for this student (e.g. their country, the programme's faculty). "
-                    "Copy the URL exactly from the page. Otherwise null.")
+        description="If this page links to another page with more details on this fact for this "
+                    "student (e.g. their country, the programme's faculty), the full URL of that "
+                    "link, copied exactly from the page. Give it even if complete is true. Otherwise null.")
 
 
 class ProgrammeFacts(BaseModel):
@@ -55,7 +55,9 @@ class ProgrammeFacts(BaseModel):
         description="Proof of English: every accepted test with its minimum scores, and every exemption")
     academic_requirement: Fact = Field(
         description="Which high-school diploma is accepted for students from the student's country, "
-                    "with all extra conditions, subject requirements (e.g. maths) and alternative routes")
+                    "with all extra conditions, subject requirements (e.g. maths) and alternative routes. "
+                    "complete=true ONLY if the page names the student's own diploma or country; "
+                    "a general rule such as 'equivalent to Dutch VWO' is NOT complete")
     mandatory_placement: Fact = Field(description="Whether a compulsory internship or placement is part of the programme")
     thesis_required: Fact = Field(description="Whether a bachelor's thesis or final project is required")
 

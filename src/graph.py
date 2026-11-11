@@ -38,6 +38,9 @@ FACT_QUERIES = {
     "thesis_required": "bachelor thesis",
 }
 
+# Words that show a rule is about THIS student's diploma (checked by Python, not the LLM)
+DIPLOMA_KEYWORDS = {"Türkiye": ["turkey", "türkiye", "turkish", "lise"]}
+
 # Sites the agent never reads (social media, search engines' own pages)
 BLOCKED_SITES = ["instagram.com", "facebook.com", "tiktok.com", "youtube.com",
                  "linkedin.com", "x.com", "twitter.com", "reddit.com", "tavily.com"]
@@ -223,10 +226,17 @@ def extract_facts(state: AgentState) -> dict:                       # box 4
             log.append(f"     {page['url']}\n        ignored: outdated (page year {page_year})")
             continue
 
+        keywords = DIPLOMA_KEYWORDS.get(state["profile"]["citizenship"], [])
         changes = []
         for name, fact in data.items():
             if not fact["found"]:
                 continue
+            if name == "academic_requirement" and fact["complete"]:
+                # Python double-checks the LLM: does the rule mention the student's diploma/country?
+                text = " ".join([fact["value"] or "", fact["quote"] or ""]
+                                + [o["option"] for o in fact["options"]]).lower()
+                if keywords and not any(k in text for k in keywords):
+                    fact["complete"] = False   # only a general rule: keep looking
             if fact["detail_link"] and not fact["complete"]:
                 new_links.append(fact["detail_link"])  # follow it in the next round
             new = {"value": fact["value"], "quote": fact["quote"], "options": fact["options"],
