@@ -1,6 +1,6 @@
 """
 graph.py — The LangGraph skeleton of the Programme Research Agent.
-Boxes 1–5 are real (search, read, extract, follow links, verify). Boxes 7–10 are still STUBs.
+Boxes 1–6 and 9 are real. Boxes 7, 8 and 10 are still STUBs.
 """
 
 import operator
@@ -12,6 +12,7 @@ from langgraph.graph import END, START, StateGraph
 
 from src.extract import extract_from_page
 from src.tools import ToolError, read_page, search_web
+from src.readiness import assess_readiness
 from src.schemas import VerificationRecord
 from src.verify import verify_fact
 
@@ -349,7 +350,11 @@ def cost_in_try(state: AgentState) -> dict:                         # box 8
 
 
 def readiness(state: AgentState) -> dict:                           # box 9
-    return {"gaps": ["STUB gap"], "log": ["9 readiness: profile vs requirements (STUB)"]}
+    """Compare the profile with the requirements: met / gap / check (rules in readiness.py)."""
+    gaps = assess_readiness(state["profile"], state["facts"], state.get("costs", {}))
+    counts = {s: sum(1 for g in gaps if g["status"] == s) for s in ("met", "gap", "check")}
+    return {"gaps": gaps,
+            "log": [f"9 readiness: {counts['met']} met, {counts['gap']} gap(s), {counts['check']} to check"]}
 
 
 def write_report(state: AgentState) -> dict:                        # box 10
@@ -368,6 +373,10 @@ def write_report(state: AgentState) -> dict:                        # box 10
             lines.append(f"Source: {f['source_url']} (page year: {f['page_year'] or '?'}, {f['freshness']})")
             lines.append(f"Quote: \"{(f['quote'] or '')[:150]}\"")
         lines.append("")
+    icons = {"met": "✅", "gap": "❌", "check": "🔍"}
+    lines.append("## Readiness & gaps")
+    for g in state["gaps"]:
+        lines.append(f"- {icons[g['status']]} **{g['area']}**: {g['finding']} _(fact status: {g['fact_status']})_")
     return {"report_md": "\n".join(lines), "log": ["10 write_report: report ready (STUB)"]}
 
 
