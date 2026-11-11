@@ -47,7 +47,7 @@ BLOCKED_SITES = ["instagram.com", "facebook.com", "tiktok.com", "youtube.com",
 
 # Words in a page address or title that mean "wrong degree level"
 WRONG_DEGREE_WORDS = {
-    "bachelor": ["master", "msc", "phd", "pre-master"],
+    "bachelor": ["master", "msc", "phd", "pre-master", "minor"],
     "master": ["bachelor", "bsc", "phd"],
 }
 
@@ -176,7 +176,9 @@ def read_pages(state: AgentState) -> dict:                          # box 3
     log = [f"3 read_pages: {len(pages)} read, {len(failed)} failed"]
     log += [f"     ✓ {p['chars']:>6} chars  {p['url']}" for p in pages]
     log += [f"     ✗ {u}" for u in failed]
-    return {"pages": pages, "log": log}
+    # Remember the final addresses too, so a redirected page is never read twice
+    seen = state["seen_urls"] + [p["url"] for p in pages if p["url"] not in state["seen_urls"]]
+    return {"pages": pages, "seen_urls": seen, "log": log}
 
 
 def start_year(text: str | None) -> int | None:
@@ -195,6 +197,30 @@ def freshness(page_year: str | None, intake: str) -> str:
     if page == target - 1:
         return "previous"       # last year's rules: the latest published, may still change
     return "outdated"           # two or more years old: never used
+
+
+def year_on_page(page_year: str | None, text: str) -> str | None:
+    """Python checks the LLM: the year it reports must really appear on the page."""
+    year = start_year(page_year)
+    return page_year if year and str(year) in text else None
+
+
+def links_matching(text: str, keywords: list[str]) -> list[str]:
+    """Find links on the page whose visible text names the student's country or diploma,
+    e.g. [Turkey](https://...). Python does this itself, without the LLM."""
+    links = re.findall(r"\[([^\]]+)\]\((https?://[^)\s]+)\)", text)
+    return [url for label, url in links if any(k in label.lower() for k in keywords)]
+
+
+def is_complete(name: str, fact: dict, keywords: list[str]) -> bool:
+    """Python decides (not the LLM) whether a fact gives the concrete answer for this student."""
+    text = " ".join([fact["value"] or "", fact["quote"] or ""]
+                    + [o["option"] for o in fact["options"]]).lower()
+    if name == "academic_requirement":
+        return any(k in text for k in keywords)          # names the student's diploma/country
+    if name == "language_requirement":
+        return any(ch.isdigit() for ch in text)          # gives at least one concrete score
+    return bool(fact["value"] or fact["options"])        # any concrete value
 
 
 def score(fact: dict) -> int:
@@ -217,7 +243,7 @@ def extract_facts(state: AgentState) -> dict:                       # box 4
             log.append(f"     ✗ LLM failed on {page['url']}: {e}")
             continue
         data = result.model_dump()
-        page_year = data.pop("page_academic_year")
+        page_year = year_on_page(data.pop("page_academic_year"), page["text"])
         fresh = freshness(page_year, state["intake"])
         faculty = faculty or data["faculty"]   # remember the faculty once a page names it
         del data["faculty"]                    # the rest are the 8 facts
@@ -231,12 +257,9 @@ def extract_facts(state: AgentState) -> dict:                       # box 4
         for name, fact in data.items():
             if not fact["found"]:
                 continue
-            if name == "academic_requirement" and fact["complete"]:
-                # Python double-checks the LLM: does the rule mention the student's diploma/country?
-                text = " ".join([fact["value"] or "", fact["quote"] or ""]
-                                + [o["option"] for o in fact["options"]]).lower()
-                if keywords and not any(k in text for k in keywords):
-                    fact["complete"] = False   # only a general rule: keep looking
+            fact["complete"] = is_complete(name, fact, keywords)
+            if not fact["value"] and fact["options"]:
+                fact["value"] = f"{len(fact['options'])} option(s), see list"
             if fact["detail_link"] and not fact["complete"]:
                 new_links.append(fact["detail_link"])  # follow it in the next round
             new = {"value": fact["value"], "quote": fact["quote"], "options": fact["options"],
@@ -246,6 +269,9 @@ def extract_facts(state: AgentState) -> dict:                       # box 4
             if old is None or score(new) > score(old):
                 facts[name] = new
                 changes.append(name if fact["complete"] else f"{name} (incomplete)")
+        # Still no diploma-specific rule? Python looks for a link named after the student's country
+        if not facts.get("academic_requirement", {}).get("complete"):
+            new_links += links_matching(page["text"], keywords)   # e.g. [Turkey](https://...)
         log.append(f"     {page['url']}  [year: {page_year or '?'} → {fresh}]\n"
                    f"        saved: {', '.join(changes) or 'nothing new'}")
     complete = sum(1 for n in KEY_FACTS if facts.get(n, {}).get("complete"))
