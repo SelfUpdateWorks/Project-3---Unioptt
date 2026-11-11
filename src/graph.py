@@ -26,7 +26,7 @@ KEY_FACTS = [
     "mandatory_placement",
     "thesis_required",
 ]
-MAX_ATTEMPTS = 3  # how many search rounds before a fact becomes "Unknown"
+MAX_ATTEMPTS = 4  # how many search rounds before a fact becomes "Unknown"
 
 # Extra search words for each fact, used when that fact is still missing
 FACT_QUERIES = {
@@ -227,6 +227,18 @@ def is_complete(name: str, fact: dict, keywords: list[str]) -> bool:
     return bool(fact["value"] or fact["options"])        # any concrete value
 
 
+def links_near_quote(text: str, quote: str | None, window: int = 800) -> list[str]:
+    """Links in the text right after the quoted sentence, e.g. 'A list of qualifications…
+    can be found here: [link]'. Python's backup when the LLM forgets to give the link."""
+    if not quote:
+        return []
+    start = text.find(quote[:60])
+    if start == -1:
+        return []
+    nearby = text[start:start + len(quote) + window]
+    return [url for _, url in re.findall(r"\[([^\]]*)\]\((https?://[^)\s]+)\)", nearby)]
+
+
 def score(fact: dict) -> int:
     """Which version of a fact is better: complete beats incomplete, current beats older."""
     return 2 * fact["complete"] + (fact["freshness"] == "current")
@@ -264,8 +276,10 @@ def extract_facts(state: AgentState) -> dict:                       # box 4
             fact["complete"] = is_complete(name, fact, keywords)
             if not fact["value"] and fact["options"]:
                 fact["value"] = f"{len(fact['options'])} option(s), see list"
-            if fact["detail_link"] and not fact["complete"]:
-                new_links.append(fact["detail_link"])  # follow it in the next round
+            if not fact["complete"]:
+                if fact["detail_link"]:
+                    new_links.append(fact["detail_link"])          # the link the LLM gave
+                new_links += links_near_quote(page["text"], fact["quote"])  # Python's backup
             new = {"value": fact["value"], "quote": fact["quote"], "options": fact["options"],
                    "complete": fact["complete"], "source_url": page["url"],
                    "page_year": page_year, "freshness": fresh}
