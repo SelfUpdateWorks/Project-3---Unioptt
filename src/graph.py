@@ -9,7 +9,7 @@ from typing import Annotated, TypedDict
 
 from langgraph.graph import END, START, StateGraph
 
-
+from src.extract import extract_from_page
 from src.tools import ToolError, read_page, search_web
 
 # The key facts every report must try to verify (Tier 1)
@@ -152,14 +152,24 @@ def read_pages(state: AgentState) -> dict:                          # box 3
 
 
 def extract_facts(state: AgentState) -> dict:                       # box 4
-    if not state["pages"]:
-        return {"log": ["4 extract_facts: no pages to read (STUB)"]}
-    # STUB: pretend tuition is only found in round 2, so the loop runs once
-    found = [f for f in KEY_FACTS if f != "tuition_non_eu" or state["attempts"] >= 2]
     facts = dict(state["facts"])
-    for name in found:
-        facts[name] = {"value": "STUB", "quote": "STUB", "source_url": state["pages"][0]["url"]}
-    return {"facts": facts, "log": [f"4 extract_facts: {len(found)}/{len(KEY_FACTS)} facts (STUB)"]}
+    log = []
+    for page in state["pages"]:
+        try:
+            result = extract_from_page(page["text"], state["programme"], state["intake"])
+        except Exception as e:
+            log.append(f"     ✗ LLM failed on {page['url']}: {e}")
+            continue
+        new = 0
+        for name, fact in result.model_dump().items():
+            if fact["found"] and name not in facts:      # keep the first source that had it
+                facts[name] = {"value": fact["value"], "quote": fact["quote"],
+                               "source_url": page["url"]}
+                new += 1
+        log.append(f"     {new} new fact(s) from {page['url']}")
+    found = sum(1 for name in KEY_FACTS if name in facts)
+    return {"facts": facts,
+            "log": [f"4 extract_facts: {found}/{len(KEY_FACTS)} facts found so far"] + log}
 
 
 def check_facts(state: AgentState) -> dict:                         # box 5
@@ -199,10 +209,12 @@ def readiness(state: AgentState) -> dict:                           # box 9
 
 def write_report(state: AgentState) -> dict:                        # box 10
     p = state["programme"]
-    rows = "\n".join(f"| {n} | {f['value']} | {f['status']} |" for n, f in state["facts"].items())
+    rows = "\n".join(
+        f"| {n} | {f['value']} | {f['status']} | {(f['quote'] or '')[:80]} | {f['source_url'] or ''} |"
+        for n, f in state["facts"].items())
     md = (f"# Programme Due Diligence Report (SKELETON)\n\n"
           f"**{p['university']} – {p['name']}** · intake {state['intake']}\n\n"
-          f"| Fact | Value | Status |\n|---|---|---|\n{rows}\n")
+          f"| Fact | Value | Status | Quote | Source |\n|---|---|---|---|---|\n{rows}\n")
     return {"report_md": md, "log": ["10 write_report: report ready (STUB)"]}
 
 
