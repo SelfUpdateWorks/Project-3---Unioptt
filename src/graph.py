@@ -3,13 +3,14 @@ graph.py — The LangGraph skeleton of the Programme Research Agent.
 Day 2: every node is a STUB (fake data) so we can test the flow end to end.
 Day 3: we replace the stubs, one by one, with the real tools.
 """
+
 import operator
 from typing import Annotated, TypedDict
 
 from langgraph.graph import END, START, StateGraph
 
 
-from src.tools import ToolError, search_web
+from src.tools import ToolError, read_page, search_web
 
 # The key facts every report must try to verify (Tier 1)
 KEY_FACTS = [
@@ -122,9 +123,32 @@ def find_official_page(state: AgentState) -> dict:                  # box 2
                    + [f"     → {u}" for u in candidates]}
 
 
+def final_url(text: str, requested: str) -> str:
+    """If the page redirected, Jina writes 'Final URL:' at the top. Use that as the real source."""
+    for line in text.splitlines()[:10]:
+        if line.startswith("Final URL:"):
+            return line.split(":", 1)[1].strip()
+    return requested
+
+
 def read_pages(state: AgentState) -> dict:                          # box 3
-    return {"pages": [{"url": u, "text": "STUB page text"} for u in state["candidate_urls"]],
-            "log": [f"3 read_pages: {len(state['candidate_urls'])} page(s) (STUB)"]}
+    pages, failed = [], []
+    for url in state["candidate_urls"]:
+        try:
+            page = read_page(url)
+        except (ToolError, ValueError):
+            failed.append(url)            # skip this page, keep going
+            continue
+        pages.append({
+            "url": final_url(page["text"], url),   # where the text really came from
+            "requested_url": url,
+            "text": page["text"],
+            "chars": page["chars"],
+        })
+    log = [f"3 read_pages: {len(pages)} read, {len(failed)} failed"]
+    log += [f"     ✓ {p['chars']:>6} chars  {p['url']}" for p in pages]
+    log += [f"     ✗ {u}" for u in failed]
+    return {"pages": pages, "log": log}
 
 
 def extract_facts(state: AgentState) -> dict:                       # box 4
