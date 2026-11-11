@@ -4,6 +4,7 @@ Boxes 1–4 are real (search, read, extract, follow links). Boxes 5 and 7–10 a
 """
 
 import operator
+import re
 from typing import Annotated, TypedDict
 from urllib.parse import urlparse
 
@@ -175,6 +176,29 @@ def read_pages(state: AgentState) -> dict:                          # box 3
     return {"pages": pages, "log": log}
 
 
+def start_year(text: str | None) -> int | None:
+    """'2027/2028' -> 2027, 'Winter 2027/28' -> 2027, '2015-16' -> 2015, None -> None."""
+    match = re.search(r"20\d{2}", text or "")
+    return int(match.group()) if match else None
+
+
+def freshness(page_year: str | None, intake: str) -> str:
+    """Compare the page's academic year with the target intake."""
+    page, target = start_year(page_year), start_year(intake)
+    if page is None or target is None:
+        return "unknown"        # the page does not say which year
+    if page >= target:
+        return "current"        # written for the target intake (or later)
+    if page == target - 1:
+        return "previous"       # last year's rules: the latest published, may still change
+    return "outdated"           # two or more years old: never used
+
+
+def score(fact: dict) -> int:
+    """Which version of a fact is better: complete beats incomplete, current beats older."""
+    return 2 * fact["complete"] + (fact["freshness"] == "current")
+
+
 def extract_facts(state: AgentState) -> dict:                       # box 4
     facts = dict(state["facts"])
     faculty = state.get("faculty")
@@ -190,23 +214,30 @@ def extract_facts(state: AgentState) -> dict:                       # box 4
             log.append(f"     ✗ LLM failed on {page['url']}: {e}")
             continue
         data = result.model_dump()
+        page_year = data.pop("page_academic_year")
+        fresh = freshness(page_year, state["intake"])
         faculty = faculty or data["faculty"]   # remember the faculty once a page names it
         del data["faculty"]                    # the rest are the 8 facts
+
+        if fresh == "outdated":                # e.g. a 2015-16 PDF: ignore it completely
+            log.append(f"     {page['url']}\n        ignored: outdated (page year {page_year})")
+            continue
+
         changes = []
         for name, fact in data.items():
             if not fact["found"]:
                 continue
-            old = facts.get(name)
-            if fact["complete"] and fact["detail_link"]:
-                fact["detail_link"] = None            # complete facts need no link
-            if fact["detail_link"]:
+            if fact["detail_link"] and not fact["complete"]:
                 new_links.append(fact["detail_link"])  # follow it in the next round
-            # Save if: we had nothing yet, or this one is complete and the old one was not
-            if old is None or (fact["complete"] and not old["complete"]):
-                facts[name] = {"value": fact["value"], "quote": fact["quote"],
-                               "complete": fact["complete"], "source_url": page["url"]}
+            new = {"value": fact["value"], "quote": fact["quote"], "options": fact["options"],
+                   "complete": fact["complete"], "source_url": page["url"],
+                   "page_year": page_year, "freshness": fresh}
+            old = facts.get(name)
+            if old is None or score(new) > score(old):
+                facts[name] = new
                 changes.append(name if fact["complete"] else f"{name} (incomplete)")
-        log.append(f"     {page['url']}\n        saved: {', '.join(changes) or 'nothing new'}")
+        log.append(f"     {page['url']}  [year: {page_year or '?'} → {fresh}]\n"
+                   f"        saved: {', '.join(changes) or 'nothing new'}")
     complete = sum(1 for n in KEY_FACTS if facts.get(n, {}).get("complete"))
     todo = list(dict.fromkeys(state.get("todo_links", []) + new_links))  # no duplicates
     return {"facts": facts, "faculty": faculty, "todo_links": todo,
@@ -233,8 +264,9 @@ def mark_unknown(state: AgentState) -> dict:
     facts = dict(state["facts"])
     unknown = [n for n in state["missing"] if n not in facts]
     for name in unknown:
-        facts[name] = {"value": None, "quote": None, "complete": False,
-                       "source_url": None, "status": "Unknown"}
+        facts[name] = {"value": None, "quote": None, "options": [], "complete": False,
+                       "source_url": None, "page_year": None, "freshness": "unknown",
+                       "status": "Unknown"}
     incomplete = [n for n in state["missing"] if n not in unknown]
     return {"facts": facts,
             "log": [f"6 decision: continue ({len(unknown)} Unknown, {len(incomplete)} still incomplete)"]}
@@ -256,13 +288,19 @@ def readiness(state: AgentState) -> dict:                           # box 9
 
 def write_report(state: AgentState) -> dict:                        # box 10
     p = state["programme"]
-    rows = "\n".join(
-        f"| {n} | {f['value']}{'' if f['complete'] or f['value'] is None else ' ⚠️ incomplete'} | {f['status']} | {(f['quote'] or '')[:80]} | {f['source_url'] or ''} |"
-        for n, f in state["facts"].items())
-    md = (f"# Programme Due Diligence Report (SKELETON)\n\n"
-          f"**{p['university']} – {p['name']}** · intake {state['intake']}\n\n"
-          f"| Fact | Value | Status | Quote | Source |\n|---|---|---|---|---|\n{rows}\n")
-    return {"report_md": md, "log": ["10 write_report: report ready (STUB)"]}
+    lines = [f"# Programme Due Diligence Report (SKELETON)\n",
+             f"**{p['university']} – {p['name']}** · intake {state['intake']}\n"]
+    for name, f in state["facts"].items():
+        flag = "" if f["complete"] or f["value"] is None else " ⚠️ incomplete"
+        lines.append(f"### {name} — {f['status']}{flag}")
+        lines.append(f"**Value:** {f['value']}")
+        for o in f["options"]:
+            lines.append(f"- [{o['kind']}] {o['option']}")
+        if f["source_url"]:
+            lines.append(f"Source: {f['source_url']} (page year: {f['page_year'] or '?'}, {f['freshness']})")
+            lines.append(f"Quote: \"{(f['quote'] or '')[:150]}\"")
+        lines.append("")
+    return {"report_md": "\n".join(lines), "log": ["10 write_report: report ready (STUB)"]}
 
 
 # ---------- Wiring: nodes + edges ----------
