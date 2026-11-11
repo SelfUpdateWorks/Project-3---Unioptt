@@ -1,11 +1,11 @@
 """
 graph.py — The LangGraph skeleton of the Programme Research Agent.
-Day 2: every node is a STUB (fake data) so we can test the flow end to end.
-Day 3: we replace the stubs, one by one, with the real tools.
+Boxes 1–4 are real (search, read, extract, follow links). Boxes 5 and 7–10 are still STUBs.
 """
 
 import operator
 from typing import Annotated, TypedDict
+from urllib.parse import urlparse
 
 from langgraph.graph import END, START, StateGraph
 
@@ -37,6 +37,10 @@ FACT_QUERIES = {
     "thesis_required": "bachelor thesis",
 }
 
+# Sites the agent never reads (social media, search engines' own pages)
+BLOCKED_SITES = ["instagram.com", "facebook.com", "tiktok.com", "youtube.com",
+                 "linkedin.com", "x.com", "twitter.com", "reddit.com", "tavily.com"]
+
 # Words in a page address or title that mean "wrong degree level"
 WRONG_DEGREE_WORDS = {
     "bachelor": ["master", "msc", "phd", "pre-master"],
@@ -52,7 +56,9 @@ class AgentState(TypedDict, total=False):
     profile: dict            # synthetic student profile
     attempts: int            # how many search rounds so far
     candidate_urls: list     # pages found by search
-    seen_urls: list
+    seen_urls: list          # all pages found so far (never read twice)
+    todo_links: list         # official "more info" links to follow next
+    faculty: str             # faculty that runs the programme (found on a page)
     pages: list              # downloaded page texts
     facts: dict              # fact name -> {value, quote, source_url, status}
     missing: list            # key facts still not found
@@ -67,14 +73,25 @@ class AgentState(TypedDict, total=False):
 
 def load_input(state: AgentState) -> dict:                          # box 1
     p = state["programme"]
-    return {"attempts": 0, "facts": {},
+    return {"attempts": 0, "facts": {}, "todo_links": [],
             "log": [f"1 load_input: {p['university']} – {p['name']}, {state['intake']}"]}
+
+
+def on_site(url: str, domain: str) -> bool:
+    """True if the address belongs to the given website (e.g. rug.nl)."""
+    host = urlparse(url).netloc.lower()
+    return host == domain or host.endswith("." + domain)
+
+
+def is_blocked(url: str) -> bool:
+    return any(on_site(url, site) for site in BLOCKED_SITES)
 
 
 def is_wrong_degree(result: dict, degree: str) -> bool:
     """True if the address or title points to another degree level (e.g. a Master's page)."""
     text = (result["url"] + " " + result["title"]).lower()
     return any(word in text for word in WRONG_DEGREE_WORDS.get(degree, []))
+
 
 def is_other_programme(result: dict, programme: dict) -> bool:
     """True if the page is about a different programme at the same level.
@@ -88,13 +105,18 @@ def find_official_page(state: AgentState) -> dict:                  # box 2
     p = state["programme"]
     attempts = state["attempts"] + 1
     seen = state.get("seen_urls", [])
-    base = f"{p['university']} {p['degree']} {p['name']}"
 
-    # Round 1: one general search. Later rounds: one search per missing fact (max 3).
+    # 1) Follow official "more info" links found on earlier pages (no search needed)
+    links = [u for u in state.get("todo_links", [])
+             if on_site(u, p["domain"]) and u not in seen][:3]
+
+    # 2) Search for facts that were not found at all (incomplete ones are handled by links)
+    base = f"{p['university']} {p['degree']} {p['name']}"
     if attempts == 1:
         queries = [f"{base} admission requirements tuition fees"]
     else:
-        queries = [f"{base} {FACT_QUERIES[f]}" for f in state["missing"][:3]]
+        absent = [f for f in state["missing"] if f not in state["facts"]]
+        queries = [f"{base} {FACT_QUERIES[f]}" for f in absent[:2]]
 
     # Search only the university's own website, except in the last round
     domains = [p["domain"]] if attempts < MAX_ATTEMPTS else None
@@ -106,21 +128,23 @@ def find_official_page(state: AgentState) -> dict:                  # box 2
         except ToolError:
             continue                      # no results for this query: try the next one
         for r in results:
-            if r["url"] in seen or r["url"] in found:
+            if r["url"] in seen or r["url"] in found or r["url"] in links:
                 continue                  # already have it
-            if is_wrong_degree(r, p["degree"]) or is_other_programme(r, p):
+            if (is_blocked(r["url"]) or is_wrong_degree(r, p["degree"])
+                    or is_other_programme(r, p)):
                 rejected.append(r["url"])
                 continue
             found.append(r["url"])
 
-    candidates = found[:3]                # read at most 3 new pages per round
+    candidates = links + found[:4 - len(links)]   # read at most 4 new pages per round
     where = p["domain"] if domains else "whole web"
+    log = [f"2 find_official_page: round {attempts}: following {len(links)} link(s), "
+           f"search on {where} gave {len(found)} new page(s), {len(rejected)} rejected"]
+    log += [f"     → {u}" for u in candidates]
     return {"attempts": attempts,
             "candidate_urls": candidates,
             "seen_urls": seen + candidates,
-            "log": [f"2 find_official_page: round {attempts} on {where}, "
-                    f"{len(candidates)} new page(s), {len(rejected)} rejected (wrong degree or programme)"]
-                   + [f"     → {u}" for u in candidates]}
+            "log": log}
 
 
 def final_url(text: str, requested: str) -> str:
@@ -153,30 +177,49 @@ def read_pages(state: AgentState) -> dict:                          # box 3
 
 def extract_facts(state: AgentState) -> dict:                       # box 4
     facts = dict(state["facts"])
+    faculty = state.get("faculty")
+    new_links = []
     log = []
+    student = (f"{state['profile']['high_school_type']}, {state['profile']['curriculum']} diploma, "
+               f"from {state['profile']['citizenship']} (Turkey)")
     for page in state["pages"]:
         try:
-            result = extract_from_page(page["text"], state["programme"], state["intake"])
+            result = extract_from_page(page["text"], state["programme"], state["intake"],
+                                       student, faculty)
         except Exception as e:
             log.append(f"     ✗ LLM failed on {page['url']}: {e}")
             continue
-        new = 0
-        for name, fact in result.model_dump().items():
-            if fact["found"] and name not in facts:      # keep the first source that had it
+        data = result.model_dump()
+        faculty = faculty or data["faculty"]   # remember the faculty once a page names it
+        del data["faculty"]                    # the rest are the 8 facts
+        changes = []
+        for name, fact in data.items():
+            if not fact["found"]:
+                continue
+            old = facts.get(name)
+            if fact["complete"] and fact["detail_link"]:
+                fact["detail_link"] = None            # complete facts need no link
+            if fact["detail_link"]:
+                new_links.append(fact["detail_link"])  # follow it in the next round
+            # Save if: we had nothing yet, or this one is complete and the old one was not
+            if old is None or (fact["complete"] and not old["complete"]):
                 facts[name] = {"value": fact["value"], "quote": fact["quote"],
-                               "source_url": page["url"]}
-                new += 1
-        log.append(f"     {new} new fact(s) from {page['url']}")
-    found = sum(1 for name in KEY_FACTS if name in facts)
-    return {"facts": facts,
-            "log": [f"4 extract_facts: {found}/{len(KEY_FACTS)} facts found so far"] + log}
+                               "complete": fact["complete"], "source_url": page["url"]}
+                changes.append(name if fact["complete"] else f"{name} (incomplete)")
+        log.append(f"     {page['url']}\n        saved: {', '.join(changes) or 'nothing new'}")
+    complete = sum(1 for n in KEY_FACTS if facts.get(n, {}).get("complete"))
+    todo = list(dict.fromkeys(state.get("todo_links", []) + new_links))  # no duplicates
+    return {"facts": facts, "faculty": faculty, "todo_links": todo,
+            "log": [f"4 extract_facts: {complete}/{len(KEY_FACTS)} facts complete, "
+                    f"{len(new_links)} link(s) to follow"] + log}
 
 
 def check_facts(state: AgentState) -> dict:                         # box 5
     facts = {name: {**f, "status": "Needs Review"} for name, f in state["facts"].items()}
-    missing = [name for name in KEY_FACTS if name not in facts]
+    # Missing = not found at all, OR found but incomplete (details are on another page)
+    missing = [n for n in KEY_FACTS if n not in facts or not facts[n]["complete"]]
     return {"facts": facts, "missing": missing,
-            "log": [f"5 check_facts: missing = {missing or 'none'} (STUB rules)"]}
+            "log": [f"5 check_facts: missing or incomplete = {missing or 'none'} (STUB rules)"]}
 
 
 def route_after_check(state: AgentState) -> str:                    # box 6 (decision)
@@ -186,11 +229,15 @@ def route_after_check(state: AgentState) -> str:                    # box 6 (dec
 
 
 def mark_unknown(state: AgentState) -> dict:
-    """Facts still missing after all rounds become Unknown — never guessed."""
+    """Facts never found become Unknown — never guessed. Incomplete facts are kept, flagged."""
     facts = dict(state["facts"])
-    for name in state["missing"]:
-        facts[name] = {"value": None, "quote": None, "source_url": None, "status": "Unknown"}
-    return {"facts": facts, "log": [f"6 decision: continue ({len(state['missing'])} marked Unknown)"]}
+    unknown = [n for n in state["missing"] if n not in facts]
+    for name in unknown:
+        facts[name] = {"value": None, "quote": None, "complete": False,
+                       "source_url": None, "status": "Unknown"}
+    incomplete = [n for n in state["missing"] if n not in unknown]
+    return {"facts": facts,
+            "log": [f"6 decision: continue ({len(unknown)} Unknown, {len(incomplete)} still incomplete)"]}
 
 
 def country_rules(state: AgentState) -> dict:                       # box 7
@@ -210,7 +257,7 @@ def readiness(state: AgentState) -> dict:                           # box 9
 def write_report(state: AgentState) -> dict:                        # box 10
     p = state["programme"]
     rows = "\n".join(
-        f"| {n} | {f['value']} | {f['status']} | {(f['quote'] or '')[:80]} | {f['source_url'] or ''} |"
+        f"| {n} | {f['value']}{'' if f['complete'] or f['value'] is None else ' ⚠️ incomplete'} | {f['status']} | {(f['quote'] or '')[:80]} | {f['source_url'] or ''} |"
         for n, f in state["facts"].items())
     md = (f"# Programme Due Diligence Report (SKELETON)\n\n"
           f"**{p['university']} – {p['name']}** · intake {state['intake']}\n\n"
