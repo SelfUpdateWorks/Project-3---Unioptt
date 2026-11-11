@@ -74,9 +74,11 @@ def check_budget(profile: dict, tuition: dict | None, costs: dict) -> dict:
     total = fee + living
     budget = profile["budget_eur_per_year"]
     what = "tuition + living costs" if living else "tuition alone"
+    rate = costs.get("eur_try")
+    in_try = (lambda eur: f" (≈ ₺{round(eur * rate):,})") if rate else (lambda eur: "")
     if total > budget:
-        return item("Budget", "gap", f"{what.capitalize()} = €{total:,}/year; your budget is €{budget:,}. "
-                    f"Shortfall: €{total - budget:,}/year.", tuition)
+        return item("Budget", "gap", f"{what.capitalize()} = €{total:,}/year{in_try(total)}; your budget is "
+                    f"€{budget:,}. Shortfall: €{total - budget:,}/year{in_try(total - budget)}.", tuition)
     return item("Budget", "met", f"{what.capitalize()} = €{total:,}/year, within your €{budget:,} budget.", tuition)
 
 

@@ -1,6 +1,6 @@
 """
 graph.py — The LangGraph skeleton of the Programme Research Agent.
-Boxes 1–6 and 9 are real. Boxes 7, 8 and 10 are still STUBs.
+Boxes 1–6, 8 and 9 are real. Boxes 7 and 10 are still STUBs.
 """
 
 import operator
@@ -10,6 +10,7 @@ from urllib.parse import urlparse
 
 from langgraph.graph import END, START, StateGraph
 
+from src.costs import build_costs
 from src.extract import extract_from_page
 from src.tools import ToolError, read_page, search_web
 from src.readiness import assess_readiness
@@ -345,8 +346,14 @@ def country_rules(state: AgentState) -> dict:                       # box 7
 
 
 def cost_in_try(state: AgentState) -> dict:                         # box 8
-    return {"costs": {"total_eur": 0, "total_try": 0, "status": "Inferred"},
-            "log": ["8 cost_in_try: EUR → TRY (STUB)"]}
+    """Tuition (verified fact) + living costs (RAG estimate), in EUR and TRY (see costs.py)."""
+    costs = build_costs(state["facts"].get("tuition_non_eu"), state["programme"]["country"])
+    if costs["total_try"]:
+        line = (f"8 cost_in_try: €{costs['total_eur']:,}/year ≈ ₺{costs['total_try']:,} "
+                f"(1 EUR = {costs['eur_try']} TRY, ECB {costs['rate_date']})")
+    else:
+        line = f"8 cost_in_try: €{costs['total_eur']:,}/year (no exchange rate available)"
+    return {"costs": costs, "log": [line]}
 
 
 def readiness(state: AgentState) -> dict:                           # box 9
@@ -373,6 +380,22 @@ def write_report(state: AgentState) -> dict:                        # box 10
             lines.append(f"Source: {f['source_url']} (page year: {f['page_year'] or '?'}, {f['freshness']})")
             lines.append(f"Quote: \"{(f['quote'] or '')[:150]}\"")
         lines.append("")
+    c = state["costs"]
+    lines.append("## Total yearly cost")
+    lines.append("| | EUR | TRY | Status |\n|---|---|---|---|")
+    lines.append(f"| Tuition (non-EU) | €{c['tuition_eur'] or 0:,} | ₺{c['tuition_try'] or 0:,} | {c['tuition_status']} (TRY: Inferred) |")
+    if c["living_eur_per_month"]:
+        lines.append(f"| Living costs (€{c['living_eur_per_month']:,}/month) | €{c['living_eur_per_year']:,} | "
+                     f"₺{c['living_try'] or 0:,} | Inferred |")
+    else:
+        lines.append("| Living costs | Unknown | Unknown | Unknown |")
+    lines.append(f"| **Total per year** | **€{c['total_eur']:,}** | **₺{c['total_try'] or 0:,}** | Inferred |")
+    if c["eur_try"]:
+        lines.append(f"\nExchange rate: 1 EUR = {c['eur_try']} TRY (ECB via Frankfurter, {c['rate_date']}). "
+                     "TRY amounts change with the exchange rate.")
+    if c["living"]["source_url"]:
+        lines.append(f"Living costs: national average from {c['living']['source_title']} "
+                     f"({c['living']['source_url']}), not specific to this city.\n")
     icons = {"met": "✅", "gap": "❌", "check": "🔍"}
     lines.append("## Readiness & gaps")
     for g in state["gaps"]:
