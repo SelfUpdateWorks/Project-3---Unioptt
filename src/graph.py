@@ -1,6 +1,7 @@
 """
 graph.py — The LangGraph skeleton of the Programme Research Agent.
-Boxes 1–9 are real. Box 10 (the final report) is still a skeleton.
+All 10 boxes are real: search, read, extract, follow links, verify, loop, country rules,
+costs, readiness, report.
 """
 
 import operator
@@ -15,6 +16,7 @@ from src.country_rules import fetch_country_rules
 from src.extract import extract_from_page
 from src.tools import ToolError, read_page, search_web
 from src.readiness import assess_readiness
+from src.report import save_report
 from src.schemas import VerificationRecord
 from src.verify import verify_fact
 
@@ -379,48 +381,10 @@ def readiness(state: AgentState) -> dict:                           # box 9
 
 
 def write_report(state: AgentState) -> dict:                        # box 10
-    p = state["programme"]
-    lines = [f"# Programme Due Diligence Report (SKELETON)\n",
-             f"**{p['university']} – {p['name']}** · intake {state['intake']}\n"]
-    for name, f in state["facts"].items():
-        flag = "" if f["complete"] or f["value"] is None else " ⚠️ incomplete"
-        lines.append(f"### {name} — {f['status']}{flag}")
-        lines.append(f"**Value:** {f['value']}")
-        for o in f["options"]:
-            lines.append(f"- [{o['kind']}] {o['option']}")
-        if f["checks"]:
-            lines.append("Checks: " + " · ".join(f"{'✓' if ok else '✗'} {c}" for c, ok in f["checks"].items()))
-        if f["source_url"]:
-            lines.append(f"Source: {f['source_url']} (page year: {f['page_year'] or '?'}, {f['freshness']})")
-            lines.append(f"Quote: \"{(f['quote'] or '')[:150]}\"")
-        lines.append("")
-    c = state["costs"]
-    lines.append("## Total yearly cost")
-    lines.append("| | EUR | TRY | Status |\n|---|---|---|---|")
-    lines.append(f"| Tuition (non-EU) | €{c['tuition_eur'] or 0:,} | ₺{c['tuition_try'] or 0:,} | {c['tuition_status']} (TRY: Inferred) |")
-    if c["living_eur_per_month"]:
-        lines.append(f"| Living costs (€{c['living_eur_per_month']:,}/month) | €{c['living_eur_per_year']:,} | "
-                     f"₺{c['living_try'] or 0:,} | Inferred |")
-    else:
-        lines.append("| Living costs | Unknown | Unknown | Unknown |")
-    lines.append(f"| **Total per year** | **€{c['total_eur']:,}** | **₺{c['total_try'] or 0:,}** | Inferred |")
-    if c["eur_try"]:
-        lines.append(f"\nExchange rate: 1 EUR = {c['eur_try']} TRY (ECB via Frankfurter, {c['rate_date']}). "
-                     "TRY amounts change with the exchange rate.")
-    if c["living"]["source_url"]:
-        lines.append(f"Living costs: national average from {c['living']['source_title']} "
-                     f"({c['living']['source_url']}), not specific to this city.\n")
-    lines.append("## Country rules (national sources — Inferred)")
-    for r in state["country_rules"]:
-        lines.append(f"**{r['topic']}**" + ("" if r["points"] else ": not found in the library"))
-        for pt in r["points"]:
-            lines.append(f"- {pt['point']} — [{pt['source_title']}]({pt['source_url']})")
-    lines.append("")
-    icons = {"met": "✅", "gap": "❌", "check": "🔍"}
-    lines.append("## Readiness & gaps")
-    for g in state["gaps"]:
-        lines.append(f"- {icons[g['status']]} **{g['area']}**: {g['finding']} _(fact status: {g['fact_status']})_")
-    return {"report_md": "\n".join(lines), "log": ["10 write_report: report ready (STUB)"]}
+    """Write the Markdown report and the JSON record to reports/ (see report.py — no AI)."""
+    md, md_path, json_path = save_report(state)
+    return {"report_md": md,
+            "log": [f"10 write_report: saved {md_path} and {json_path}"]}
 
 
 # ---------- Wiring: nodes + edges ----------

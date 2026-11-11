@@ -1,6 +1,7 @@
 """
 run.py — Run the agent from the terminal.
-Run:     python run.py
+Run:     python run.py            (saves the report in reports/)
+Print:   python run.py --print    (also shows the report in the terminal)
 Diagram: python run.py --diagram
 """
 import json
@@ -31,7 +32,8 @@ def main() -> None:
     })
 
     print("\n".join(result["log"]))
-    print("\n" + result["report_md"])
+    if "--print" in sys.argv:
+        print("\n" + result["report_md"])   # show the whole report in the terminal
 
 
 if __name__ == "__main__":

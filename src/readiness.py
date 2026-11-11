@@ -109,7 +109,7 @@ def check_scholarship(fact: dict | None, rules: list[dict]) -> dict:
                     "Check who can apply, the amount and the deadline for each.", fact)
     if national:
         return item("Scholarship", "check", "You need a scholarship. No programme scholarship was found; "
-                    "see the national scholarships under Country rules.", None)
+                    "see the national scholarships in section 5.", None)
     return item("Scholarship", "check", "You need a scholarship, but none was found on the official pages — "
                 "ask the university's admissions office.", fact)
 
