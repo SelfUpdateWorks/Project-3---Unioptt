@@ -57,6 +57,9 @@ class ProgrammeFacts(BaseModel):
         description="Which high-school diploma is accepted for students from the student's country, "
                     "with all extra conditions, subject requirements (e.g. maths) and alternative routes")
     mandatory_placement: Fact = Field(description="Whether a compulsory internship or placement is part of the programme")
+    scholarships: Fact = Field(
+        description="Scholarships or fee waivers that non-EU students of this programme can apply for: "
+                    "one option per scholarship, with amount and who can apply")
     thesis_required: Fact = Field(
         description="Whether a bachelor's thesis, final project or 'Bachelor's Project' is part of the programme")
 

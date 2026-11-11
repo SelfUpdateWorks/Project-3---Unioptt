@@ -1,6 +1,6 @@
 """
 graph.py — The LangGraph skeleton of the Programme Research Agent.
-Boxes 1–6, 8 and 9 are real. Boxes 7 and 10 are still STUBs.
+Boxes 1–9 are real. Box 10 (the final report) is still a skeleton.
 """
 
 import operator
@@ -11,6 +11,7 @@ from urllib.parse import urlparse
 from langgraph.graph import END, START, StateGraph
 
 from src.costs import build_costs
+from src.country_rules import fetch_country_rules
 from src.extract import extract_from_page
 from src.tools import ToolError, read_page, search_web
 from src.readiness import assess_readiness
@@ -27,6 +28,7 @@ KEY_FACTS = [
     "academic_requirement",
     "mandatory_placement",
     "thesis_required",
+    "scholarships",
 ]
 MAX_ATTEMPTS = 4  # how many search rounds before a fact becomes "Unknown"
 
@@ -40,6 +42,7 @@ FACT_QUERIES = {
     "academic_requirement": "admission requirements international diploma",
     "mandatory_placement": "internship placement",
     "thesis_required": "bachelor thesis",
+    "scholarships": "scholarships for international non-EU students",
 }
 
 # Words that show a rule is about THIS student's diploma (checked by Python, not the LLM)
@@ -145,7 +148,7 @@ def find_official_page(state: AgentState) -> dict:                  # box 2
                 continue
             found.append(r["url"])
 
-    candidates = links + found[:4 - len(links)]   # read at most 4 new pages per round
+    candidates = links + found[:5 - len(links)]   # read at most 5 new pages per round
     where = p["domain"] if domains else "whole web"
     log = [f"2 find_official_page: round {attempts}: following {len(links)} link(s), "
            f"search on {where} gave {len(found)} new page(s), {len(rejected)} rejected"]
@@ -206,9 +209,14 @@ def freshness(page_year: str | None, intake: str) -> str:
 
 
 def year_on_page(page_year: str | None, text: str) -> str | None:
-    """Python checks the LLM: the year it reports must really appear on the page."""
+    """Python checks the LLM: the page must really show an ACADEMIC year like '2027/28' or
+    '2027-2028' in its content. A plain date ('Last modified: 19 October 2026') or Jina's
+    'Published Time' header is not an academic year, so it does not count."""
+    body = "\n".join(l for l in text.splitlines() if not l.startswith("Published Time:"))
     year = start_year(page_year)
-    return page_year if year and str(year) in text else None
+    if year and re.search(rf"{year}\s*[/–-]\s*(20)?\d{{2}}\b", body):
+        return page_year
+    return None
 
 
 def links_matching(text: str, keywords: list[str]) -> list[str]:
@@ -226,6 +234,8 @@ def is_complete(name: str, fact: dict, keywords: list[str]) -> bool:
         return any(k in text for k in keywords)          # names the student's diploma/country
     if name == "language_requirement":
         return any(ch.isdigit() for ch in text)          # gives at least one concrete score
+    if name == "scholarships":
+        return bool(fact["options"])                     # names at least one actual scholarship
     return bool(fact["value"] or fact["options"])        # any concrete value
 
 
@@ -341,8 +351,11 @@ def mark_unknown(state: AgentState) -> dict:
 
 
 def country_rules(state: AgentState) -> dict:                       # box 7
-    return {"country_rules": [{"text": "STUB rule", "url": "STUB", "status": "Inferred"}],
-            "log": [f"7 country_rules: RAG for country={state['programme']['country']} (STUB)"]}
+    """National rules from the RAG library, each point with a checked quote (see country_rules.py)."""
+    rules = fetch_country_rules(state["programme"]["country"])
+    answered = sum(1 for r in rules if r["points"])
+    return {"country_rules": rules,
+            "log": [f"7 country_rules: {answered}/{len(rules)} questions answered from the library (Inferred)"]}
 
 
 def cost_in_try(state: AgentState) -> dict:                         # box 8
@@ -358,7 +371,8 @@ def cost_in_try(state: AgentState) -> dict:                         # box 8
 
 def readiness(state: AgentState) -> dict:                           # box 9
     """Compare the profile with the requirements: met / gap / check (rules in readiness.py)."""
-    gaps = assess_readiness(state["profile"], state["facts"], state.get("costs", {}))
+    gaps = assess_readiness(state["profile"], state["facts"], state.get("costs", {}),
+                            state.get("country_rules", []))
     counts = {s: sum(1 for g in gaps if g["status"] == s) for s in ("met", "gap", "check")}
     return {"gaps": gaps,
             "log": [f"9 readiness: {counts['met']} met, {counts['gap']} gap(s), {counts['check']} to check"]}
@@ -396,6 +410,12 @@ def write_report(state: AgentState) -> dict:                        # box 10
     if c["living"]["source_url"]:
         lines.append(f"Living costs: national average from {c['living']['source_title']} "
                      f"({c['living']['source_url']}), not specific to this city.\n")
+    lines.append("## Country rules (national sources — Inferred)")
+    for r in state["country_rules"]:
+        lines.append(f"**{r['topic']}**" + ("" if r["points"] else ": not found in the library"))
+        for pt in r["points"]:
+            lines.append(f"- {pt['point']} — [{pt['source_title']}]({pt['source_url']})")
+    lines.append("")
     icons = {"met": "✅", "gap": "❌", "check": "🔍"}
     lines.append("## Readiness & gaps")
     for g in state["gaps"]:

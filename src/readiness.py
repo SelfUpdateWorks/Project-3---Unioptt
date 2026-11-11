@@ -100,15 +100,29 @@ def check_deadline(fact: dict | None, today: date) -> dict:
                 "Language tests and documents must be ready before then.", fact)
 
 
-def assess_readiness(profile: dict, facts: dict, costs: dict, today: date | None = None) -> list[dict]:
+def check_scholarship(fact: dict | None, rules: list[dict]) -> dict:
+    names = [o["option"] for o in (fact or {}).get("options", [])]
+    national = next((r for r in rules if r["topic"] == "National scholarships" and r["points"]), None)
+    if names:
+        listed = "; ".join(names[:4])
+        return item("Scholarship", "check", f"You need a scholarship. The university lists: {listed}. "
+                    "Check who can apply, the amount and the deadline for each.", fact)
+    if national:
+        return item("Scholarship", "check", "You need a scholarship. No programme scholarship was found; "
+                    "see the national scholarships under Country rules.", None)
+    return item("Scholarship", "check", "You need a scholarship, but none was found on the official pages — "
+                "ask the university's admissions office.", fact)
+
+
+def assess_readiness(profile: dict, facts: dict, costs: dict, rules: list[dict] | None = None,
+                     today: date | None = None) -> list[dict]:
     today = today or date.today()
     results = [check_language(profile, facts.get("language_requirement"))]
     results += check_academic(profile, facts.get("academic_requirement"))
     results.append(check_budget(profile, facts.get("tuition_non_eu"), costs))
     results.append(check_deadline(facts.get("application_deadline"), today))
     if profile.get("scholarship_need"):
-        results.append(item("Scholarship", "check", "You need a scholarship — see the scholarships "
-                            "section for what exists and how to apply.", None))
+        results.append(check_scholarship(facts.get("scholarships"), rules or []))
     return results
 
 
@@ -125,5 +139,5 @@ if __name__ == "__main__":
         "tuition_non_eu": f("€19800 per year"),
         "application_deadline": f("01 May 2027"),
     }
-    for r in assess_readiness(profile, facts, {}, today=date(2026, 11, 11)):
+    for r in assess_readiness(profile, facts, {}, [], today=date(2026, 11, 11)):
         print(f"[{r['status']:5}] {r['area']:12} {r['finding']}")
