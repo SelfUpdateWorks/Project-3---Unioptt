@@ -31,7 +31,8 @@ class LivingCost(BaseModel):
 
 
 PROMPT = """From the text below, find the monthly cost of living for ONE student (rent, food,
-insurance, transport, etc.), WITHOUT tuition fees. Use only this text; never guess."""
+insurance, transport, etc.), WITHOUT tuition fees. Use only this text; never guess.
+If you add up a list, copy the WHOLE list into the quote, every line, exactly as written."""
 
 
 def euro_amounts(text: str) -> list[float]:
@@ -46,18 +47,25 @@ def number_matches_quote(monthly: float, quote: str) -> bool:
     return abs(sum(euro_amounts(quote)) - monthly) <= 1
 
 
+MAX_TRIES = 3  # the LLM sometimes skips a line in the quote; Python then asks again
+
+
 def estimate_living_costs(country: str) -> dict:
-    """Ask the RAG library for the monthly cost of living in this country."""
+    """Ask the RAG library for the monthly cost of living in this country.
+    Python accepts the LLM's answer only if the quote is on the page and the number matches it;
+    otherwise it asks again (max MAX_TRIES per passage)."""
     hits = search("monthly cost of living for international students: rent, groceries, insurance",
                   country=country, topic="costs", top_k=4)
+    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0).with_structured_output(LivingCost)
     for hit in hits:
-        llm = ChatOpenAI(model="gpt-4o-mini", temperature=0).with_structured_output(LivingCost)
-        result = llm.invoke([("system", PROMPT), ("human", hit["text"])])
-        if (result.found and result.monthly_eur and result.quote
-                and check_quote_on_page(result.quote, hit["text"])
-                and number_matches_quote(result.monthly_eur, result.quote)):
-            return {"monthly_eur": round(result.monthly_eur), "quote": result.quote,
-                    "source_url": hit["url"], "source_title": hit["title"], "status": "Inferred"}
+        for _ in range(MAX_TRIES):
+            result = llm.invoke([("system", PROMPT), ("human", hit["text"])])
+            if not (result.found and result.monthly_eur and result.quote):
+                break                      # this passage has no living costs: try the next one
+            if (check_quote_on_page(result.quote, hit["text"])
+                    and number_matches_quote(result.monthly_eur, result.quote)):
+                return {"monthly_eur": round(result.monthly_eur), "quote": result.quote,
+                        "source_url": hit["url"], "source_title": hit["title"], "status": "Inferred"}
     return {"monthly_eur": None, "quote": None, "source_url": None, "source_title": None,
             "status": "Unknown"}
 
