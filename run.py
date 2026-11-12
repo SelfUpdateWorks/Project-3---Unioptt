@@ -1,35 +1,32 @@
 """
 run.py — Run the agent from the terminal.
-Run:     python run.py            (saves the report in reports/)
-Print:   python run.py --print    (also shows the report in the terminal)
+Run:     python run.py groningen      (saves the report in reports/)
+         python run.py tum
+Print:   python run.py tum --print    (also shows the report in the terminal)
 Diagram: python run.py --diagram
+The programmes are listed in data/programmes.json; the student profile in data/sample_profile.json.
 """
 import json
 import sys
 from pathlib import Path
 
-from src.graph import build_graph
+from src.graph import build_graph, run_agent
 
 
 def main() -> None:
-    app = build_graph()
-
     if "--diagram" in sys.argv:
-        print(app.get_graph().draw_mermaid())  # paste into the README
+        print(build_graph().get_graph().draw_mermaid())  # paste into the README
+        return
+
+    programmes = json.loads(Path("data/programmes.json").read_text(encoding="utf-8"))
+    keys = [a for a in sys.argv[1:] if not a.startswith("--")]
+    key = keys[0] if keys else "groningen"
+    if key not in programmes:
+        print(f"Unknown programme '{key}'. Choose one of: {', '.join(programmes)}")
         return
 
     profile = json.loads(Path("data/sample_profile.json").read_text(encoding="utf-8"))
-    result = app.invoke({
-        "programme": {
-            "university": "University of Groningen",
-            "name": "Artificial Intelligence",
-            "degree": "bachelor",
-            "country": "NL",
-            "domain": "rug.nl",
-        },
-        "intake": profile["target_intake"],
-        "profile": profile,
-    })
+    result = run_agent(programmes[key], profile)
 
     print("\n".join(result["log"]))
     if "--print" in sys.argv:

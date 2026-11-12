@@ -27,7 +27,39 @@ def item(area: str, status: str, finding: str, fact: dict | None) -> dict:
 
 # ---------- One rule per area ----------
 
-def check_language(profile: dict, fact: dict | None) -> dict:
+CEFR = ["A1", "A2", "B1", "B2", "C1", "C2"]
+# German certificates and the CEFR level they stand for (approximate, for flagging only)
+GERMAN_TESTS = {"dsh-3": "C2", "dsh 3": "C2", "dsh-2": "C1", "dsh 2": "C1", "dsh-1": "B2",
+                "testdaf": "C1", "c1 hochschule": "C1"}
+
+
+def required_cefr(fact: dict) -> str | None:
+    """The LOWEST level among the accepted options (the student needs only one of them)."""
+    levels = []
+    for o in fact["options"] or [{"option": fact["value"] or ""}]:
+        text = o["option"].lower()
+        levels += [lvl.upper() for lvl in re.findall(r"\b([abc][12])\b", text)]
+        levels += [lvl for test, lvl in GERMAN_TESTS.items() if test in text]
+    return min(levels, key=CEFR.index) if levels else None
+
+
+def check_german(profile: dict, fact: dict | None) -> dict:
+    if not fact or fact["value"] is None:
+        return item("German", "check", "German language requirement not found — check the official page.", fact)
+    have = (profile.get("german") or {}).get("cefr")
+    need = required_cefr(fact)
+    if need is None:
+        return item("German", "check", f"Required: {fact['value']}. Compare with your German level ({have}).", fact)
+    if have is None or CEFR.index(have) < CEFR.index(need):
+        return item("German", "gap", f"The programme is taught in German and needs about {need} level "
+                    f"(e.g. DSH-2 / TestDaF); your profile shows {have or 'no German'}.", fact)
+    return item("German", "check", f"Your German ({have}) reaches the needed {need} level — you still need "
+                "an accepted certificate.", fact)
+
+
+def check_language(profile: dict, fact: dict | None, teaching_language: str = "English") -> dict:
+    if "german" in teaching_language.lower():
+        return check_german(profile, fact)
     if not fact or not fact["options"]:
         return item("English", "check", "Language requirement not found — check the official page.", fact)
     exam, score = profile["english"]["exam"], profile["english"]["score"]
@@ -65,11 +97,13 @@ def check_academic(profile: dict, fact: dict | None) -> list[dict]:
 
 
 def check_budget(profile: dict, tuition: dict | None, costs: dict) -> dict:
-    nums = [int(n) for n in re.findall(r"\d+", (tuition or {}).get("value", "").replace(",", "")
-                                       .replace(".", "")) if int(n) >= 1000]
-    if not nums:
-        return item("Budget", "check", "Tuition fee not found — cannot compare with your budget.", tuition)
-    fee = max(nums)
+    fee = costs.get("tuition_eur")        # yearly tuition, worked out in costs.py (box 8)
+    if fee is None:
+        nums = [int(n) for n in re.findall(r"\d+", (tuition or {}).get("value", "").replace(",", "")
+                                           .replace(".", "")) if int(n) >= 1000]
+        if not nums:
+            return item("Budget", "check", "Tuition fee not found — cannot compare with your budget.", tuition)
+        fee = max(nums)
     living = costs.get("living_eur_per_year", 0)
     total = fee + living
     budget = profile["budget_eur_per_year"]
@@ -115,9 +149,9 @@ def check_scholarship(fact: dict | None, rules: list[dict]) -> dict:
 
 
 def assess_readiness(profile: dict, facts: dict, costs: dict, rules: list[dict] | None = None,
-                     today: date | None = None) -> list[dict]:
+                     today: date | None = None, teaching_language: str = "English") -> list[dict]:
     today = today or date.today()
-    results = [check_language(profile, facts.get("language_requirement"))]
+    results = [check_language(profile, facts.get("language_requirement"), teaching_language)]
     results += check_academic(profile, facts.get("academic_requirement"))
     results.append(check_budget(profile, facts.get("tuition_non_eu"), costs))
     results.append(check_deadline(facts.get("application_deadline"), today))

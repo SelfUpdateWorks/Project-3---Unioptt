@@ -4,10 +4,11 @@
     "name": "Artificial Intelligence",
     "degree": "bachelor",
     "country": "NL",
-    "domain": "rug.nl"
+    "domain": "rug.nl",
+    "teaching_language": "English"
   },
   "intake": "Winter 2027/28",
-  "report_date": "2026-11-11",
+  "report_date": "2026-11-12",
   "profile_id": "P001",
   "engine_match_quoted": {
     "program": "University of Groningen, BSc Artificial Intelligence",
@@ -18,7 +19,7 @@
   },
   "requirements": {
     "language": {
-      "value": "One of 5 accepted English tests.",
+      "value": "One of 5 accepted English tests",
       "options": [
         {
           "kind": "requirement",
@@ -43,7 +44,7 @@
         {
           "kind": "requirement",
           "option": "TOEFL iBT: overall score 90 (min. 21 in Reading, Listening, and Speaking, 24 in Writing)",
-          "quote": "TOEFL iBT*: overall score 90 (min. 21 in Reading, Listening, and Speaking, 24 in Writing)"
+          "quote": "TOEFL iBT: overall score 90 (min. 21 in Reading, Listening, and Speaking, 24 in Writing)"
         }
       ],
       "complete": true,
@@ -51,9 +52,9 @@
         "status": "Needs Review",
         "source": "official",
         "source_url": "https://www.rug.nl/education/application-enrolment-tuition-fees/admission/non-dutch-qualification/bachelor/bachelor-entry-requirements/language-requirements-and-exemptions",
-        "last_verified": "2026-11-11",
+        "last_verified": "2026-11-12",
         "confidence": "medium",
-        "notes": "Failed: right_intake. Quote: \"We accept the following language tests:\""
+        "notes": "Failed: quote_on_page (not word for word: TOEFL iBT: overall score 90 (min. 21 in ), right_intake. Quote: \"We accept the following language tests:\""
       }
     },
     "academic": {
@@ -62,7 +63,12 @@
         {
           "kind": "requirement",
           "option": "Lise Diploması with at least 4 content-based AP courses externally examined by the College Board (grades 3-5)",
-          "quote": "*   Lise Diploması with at least 4 content-based* AP courses externally examined by the College Board (grades 3-5)"
+          "quote": "Lise Diploması with at least 4 content-based* AP courses externally examined by the College Board (grades 3-5)"
+        },
+        {
+          "kind": "condition",
+          "option": "May include only 1 of the specified AP courses at the most",
+          "quote": "May include only 1 of the following AP courses at the most: AP Capstone: AP Research/AP Seminar; AP Music History/Music Theory; AP Studio Art: 2-D Design/2-D Art and Design; AP Studio Art: 3-D Design/3-D Art and Design; AP Studio Art: Drawing/Drawing"
         }
       ],
       "complete": true,
@@ -70,9 +76,9 @@
         "status": "Verified",
         "source": "official",
         "source_url": "https://www.rug.nl/education/application-enrolment-tuition-fees/admission/non-dutch-qualification/bachelor/bachelor-entry-requirements/bachelorlinkscountry/turkey",
-        "last_verified": "2026-11-11",
+        "last_verified": "2026-11-12",
         "confidence": "high",
-        "notes": "Quote: \"*   Lise Diploması with at least 4 content-based* AP courses externally examined by the College Board (grades 3-5)\""
+        "notes": "Quote: \"For an equivalent level of the Dutch pre-university diploma (VWO) you will need the following: Lise Diploması with at least 4 content-based* AP courses externally examined by the College Board (grades 3-5)\""
       }
     },
     "application_deadlines": {
@@ -83,7 +89,7 @@
         "status": "Verified",
         "source": "official",
         "source_url": "https://www.rug.nl/bachelors/artificial-intelligence/?lang=en",
-        "last_verified": "2026-11-11",
+        "last_verified": "2026-11-12",
         "confidence": "high",
         "notes": "Quote: \"non-EU/EEA students | 01 May 2027 | 01 September 2027\""
       }
@@ -94,7 +100,7 @@
         "status": "Inferred",
         "source": "country_default",
         "source_url": "https://www.studyinnl.org/plan-your-stay/how-to-apply",
-        "last_verified": "2026-11-11",
+        "last_verified": "2026-11-12",
         "confidence": "low",
         "notes": "National rule from the curated library, applied to this programme"
       }
@@ -108,7 +114,7 @@
           "status": "Verified",
           "source": "official",
           "source_url": "https://www.rug.nl/bachelors/artificial-intelligence/?lang=en",
-          "last_verified": "2026-11-11",
+          "last_verified": "2026-11-12",
           "confidence": "high",
           "notes": "Quote: \"non-EU/EEA | 2027-2028 | €19800 | full-time\""
         }
@@ -148,7 +154,7 @@
         "status": "Verified",
         "source": "official",
         "source_url": "https://www.rug.nl/bachelors/artificial-intelligence/?lang=en",
-        "last_verified": "2026-11-11",
+        "last_verified": "2026-11-12",
         "confidence": "high",
         "notes": "Quote: \"Language of instruction English\""
       }
@@ -161,7 +167,7 @@
         "status": "Verified",
         "source": "official",
         "source_url": "https://www.rug.nl/bachelors/artificial-intelligence/?lang=en",
-        "last_verified": "2026-11-11",
+        "last_verified": "2026-11-12",
         "confidence": "high",
         "notes": "Quote: \"Duration 36 months (180 EC)\""
       }
@@ -180,29 +186,29 @@
       }
     },
     "thesis_required": {
-      "value": "Bachelor's Project (15 EC) is required",
+      "value": "Bachelor's Project (15 EC) is part of the programme",
       "options": [],
       "complete": true,
       "verification": {
         "status": "Verified",
         "source": "official",
         "source_url": "https://www.rug.nl/bachelors/artificial-intelligence/?lang=en",
-        "last_verified": "2026-11-11",
+        "last_verified": "2026-11-12",
         "confidence": "high",
-        "notes": "Quote: \"Bachelor's Project (15 EC)\""
+        "notes": "Quote: \"You will round off your bachelor's degree with a small research project (15 EC), which you will complete under the supervision of a researcher in the field of Artificial Intelligence at the Bernoulli Institute.\""
       }
     },
     "scholarships": {
-      "value": "Several scholarships are available for international students who are motivated to study Bachelor’s, Master’s and PhD programmes.",
+      "value": "Several scholarships are available for international students.",
       "options": [],
       "complete": false,
       "verification": {
         "status": "Needs Review",
         "source": "official",
         "source_url": "https://www.rug.nl/education/scholarships/findscholarshipsbackup?lang=en",
-        "last_verified": "2026-11-11",
+        "last_verified": "2026-11-12",
         "confidence": "medium",
-        "notes": "Failed: incomplete. Quote: \"Several scholarships are available for international students who are motivated to study Bachelor’s, Master’s and PhD programmes, as well as for exchanges, short courses and research stays at our university.\""
+        "notes": "Failed: incomplete. Quote: \"The university is committed to recognizing excellence in academic achievement through offering a number of scholarships for international students and researchers.\""
       }
     }
   },
@@ -216,7 +222,7 @@
         "status": "Unknown",
         "source": "unknown",
         "source_url": null,
-        "last_verified": "2026-11-11",
+        "last_verified": "2026-11-12",
         "confidence": "none",
         "notes": "No answer found in the curated library"
       }
@@ -249,7 +255,7 @@
         "status": "Inferred",
         "source": "country_default",
         "source_url": "https://www.studyinnl.org/plan-your-stay/how-to-apply",
-        "last_verified": "2026-11-11",
+        "last_verified": "2026-11-12",
         "confidence": "low",
         "notes": "National rule from the curated library, applied to this programme"
       }
@@ -259,13 +265,13 @@
       "question": "Which national scholarships exist for non-EU bachelor students in the Netherlands?",
       "points": [
         {
-          "point": "The MENA Scholarship Programme (MSP) is available.",
+          "point": "MENA Scholarship Programme (MSP)",
           "quote": "*   MENA Scholarship Programme (MSP)\"",
           "source_url": "https://www.studyinnl.org/finances/scholarships",
           "source_title": "Scholarships"
         },
         {
-          "point": "The NL scholarship (Holland Scholarship) is available.",
+          "point": "NL scholarship (Holland Scholarship)",
           "quote": "*   NL scholarship (Holland Scholarship)\"",
           "source_url": "https://www.studyinnl.org/finances/scholarships",
           "source_title": "Scholarships"
@@ -276,7 +282,7 @@
         "status": "Inferred",
         "source": "country_default",
         "source_url": "https://www.studyinnl.org/finances/scholarships",
-        "last_verified": "2026-11-11",
+        "last_verified": "2026-11-12",
         "confidence": "low",
         "notes": "National rule from the curated library, applied to this programme"
       }
@@ -286,13 +292,13 @@
       "question": "How is a foreign university degree recognised in Türkiye (YÖK denklik), and what does it cost?",
       "points": [
         {
-          "point": "Foreign university degrees can be recognized in Türkiye through a formal application process.",
+          "point": "Foreign university degrees can be recognized in Türkiye through a diploma equivalency process.",
           "quote": "Yurt dışındaki üniversitelerin ön lisans, lisans ya da yüksek lisans programlarından mezun Türkiye Cumhuriyeti vatandaşları.",
           "source_url": "https://denklik.yok.gov.tr/tr/page/663",
           "source_title": "YÖK diploma equivalence application (Denklik Başvurusu)"
         },
         {
-          "point": "There are specific fees for the recognition process set for the year 2026.",
+          "point": "The application fee for diploma equivalency is determined annually by the Higher Education Executive Board.",
           "quote": "2026 yılı için aşağıda belirtilen ücretlerin alınmasına karar verilmiştir.",
           "source_url": "https://denklik.yok.gov.tr/tr/page/663",
           "source_title": "YÖK diploma equivalence application (Denklik Başvurusu)"
@@ -309,7 +315,7 @@
         "status": "Inferred",
         "source": "country_default",
         "source_url": "https://denklik.yok.gov.tr/tr/page/663",
-        "last_verified": "2026-11-11",
+        "last_verified": "2026-11-12",
         "confidence": "low",
         "notes": "National rule from the curated library, applied to this programme"
       }
@@ -337,7 +343,7 @@
     {
       "area": "Deadline",
       "status": "met",
-      "finding": "Apply by 01 May 2027: 171 days from today. Language tests and documents must be ready before then.",
+      "finding": "Apply by 01 May 2027: 170 days from today. Language tests and documents must be ready before then.",
       "fact_status": "Verified"
     },
     {

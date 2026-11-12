@@ -1,0 +1,344 @@
+{
+  "programme": {
+    "university": "Technical University of Munich",
+    "name": "Informatics",
+    "degree": "bachelor",
+    "country": "DE",
+    "domain": "tum.de",
+    "teaching_language": "German"
+  },
+  "intake": "Winter 2027/28",
+  "report_date": "2026-11-12",
+  "profile_id": "P001",
+  "engine_match_quoted": {
+    "program": "University of Groningen, BSc Artificial Intelligence",
+    "label": "Best Fit",
+    "score": 78,
+    "reason": "(synthetic) strong maths and interest in AI",
+    "engine_version": "synthetic-for-demo"
+  },
+  "requirements": {
+    "language": {
+      "value": "One of 4 accepted German tests",
+      "options": [
+        {
+          "kind": "requirement",
+          "option": "DSH",
+          "quote": "Die „Deutsche Sprachprüfung für den Hochschulzugang“ - DSH (§ 3)"
+        }
+      ],
+      "complete": true,
+      "verification": {
+        "status": "Needs Review",
+        "source": "official",
+        "source_url": "https://www.tum.de/fileadmin/w00bfo/www/Studium/Dokumente/Immatrikulationsamt/Sprachnachweis/2004_06_25_RO_DT.pdf",
+        "last_verified": "2026-11-12",
+        "confidence": "medium",
+        "notes": "Failed: value_in_quote. Quote: \"Die gemäß § 1 erforderlichen Sprachkenntnisse werden, sofern kein Befreiungsgrund (§ 8) vorliegt, entweder durch die „Deutsche Sprachprüfung für den Hochschulzugang“ - DSH (§ 3) oder durch den „Test Deutsch als Fremdsprache“ - TestDaF (§ 4) der Gesellschaft für Akademische Studienvorbereitung und Testentwicklung e. V., gemeinsam angeboten vom TestDaF-Institut und vom Goethe-Institut, oder durch den „Prüfungsteil Deutsch“ der Feststellungsprüfung an Studienkollegs bzw. an der nach Landesrecht zuständigen Stelle (§ 5) oder durch das Deutsche Sprachdiplom der Kultusministerkonferenz - Zweite Stufe (DSD II) (Beschluss der Kultusministerkonferenz vom 06.12.1996 in der jeweils geltenden Fassung) (§ 6) nachgewiesen.\""
+      }
+    },
+    "academic": {
+      "value": "MEB diploma accepted for admission.",
+      "options": [],
+      "complete": false,
+      "verification": {
+        "status": "Needs Review",
+        "source": "official",
+        "source_url": "https://www.tum.de/en/studies/application/application-info-portal/admission-requirements/language-certificates",
+        "last_verified": "2026-11-12",
+        "confidence": "medium",
+        "notes": "Failed: value_in_quote, incomplete. Quote: \"Applicants holding a German university entrance qualification do not require verification of their German language skills.\""
+      }
+    },
+    "application_deadlines": {
+      "value": "15.05. – 15.07.",
+      "options": [],
+      "complete": true,
+      "verification": {
+        "status": "Verified",
+        "source": "official",
+        "source_url": "https://www.tum.de/en/studies/degree-programs/detail/informatics-bachelor-of-science-bsc",
+        "last_verified": "2026-11-12",
+        "confidence": "high",
+        "notes": "Quote: \"**Application period for the winter semester: 15.05. – 15.07.**\""
+      }
+    },
+    "application_platform": {
+      "value": "International students can apply through different portals depending on their situation.",
+      "verification": {
+        "status": "Inferred",
+        "source": "country_default",
+        "source_url": "https://www.daad.de/en/studying-in-germany/requirements/application-process/",
+        "last_verified": "2026-11-12",
+        "confidence": "low",
+        "notes": "National rule from the curated library, applied to this programme"
+      }
+    },
+    "financial": {
+      "tuition_non_eu": {
+        "value": "2,300 euros or 3,400 euros per semester",
+        "options": [],
+        "complete": true,
+        "verification": {
+          "status": "Needs Review",
+          "source": "official",
+          "source_url": "https://www.tum.de/en/studies/fees/tuition",
+          "last_verified": "2026-11-12",
+          "confidence": "medium",
+          "notes": "Failed: value_in_quote. Quote: \"Tuition fees for international students from non-EU/EEA countries at TUM will increase for the winter semester 2027/28.\""
+        }
+      },
+      "yearly_cost": {
+        "tuition_eur": 6800,
+        "tuition_status": "Needs Review",
+        "living_eur_per_month": 992,
+        "living_eur_per_year": 11904,
+        "total_eur": 18704,
+        "eur_try": 55.8897,
+        "rate_date": "2026-11-11",
+        "rate_source": "https://api.frankfurter.dev/v1/latest?base=EUR&symbols=TRY",
+        "tuition_try": 380050,
+        "living_try": 665311,
+        "total_try": 1045361,
+        "status": "Inferred"
+      },
+      "living_cost_source": {
+        "monthly_eur": 992,
+        "quote": "the presumed annual requirement that must be paid into the blocked account when applying for a visa amounts to 11,904 euros.",
+        "source_url": "https://www.study-in-germany.de/en/plan-your-studies/requirements/proof-of-financing/",
+        "source_title": "Proof of financing (blocked account)",
+        "status": "Inferred"
+      }
+    },
+    "portfolio": null,
+    "interview": null,
+    "required_documents": null
+  },
+  "programme_facts": {
+    "teaching_language": {
+      "value": "German",
+      "options": [],
+      "complete": true,
+      "verification": {
+        "status": "Needs Review",
+        "source": "official",
+        "source_url": "https://www.tum.de/en/studies/fees/tuition",
+        "last_verified": "2026-11-12",
+        "confidence": "medium",
+        "notes": "Failed: value_in_quote. Quote: \"In general, you are required to pay tuition fees if you …\""
+      }
+    },
+    "duration": {
+      "value": "6 semesters",
+      "options": [],
+      "complete": true,
+      "verification": {
+        "status": "Verified",
+        "source": "official",
+        "source_url": "https://www.tum.de/en/studies/degree-programs/detail/informatics-bachelor-of-science-bsc",
+        "last_verified": "2026-11-12",
+        "confidence": "high",
+        "notes": "Quote: \"**Standard Duration of Studies** *    6 semesters (fulltime)\""
+      }
+    },
+    "mandatory_placement": {
+      "value": "Internships or Semester Abroad",
+      "options": [],
+      "complete": true,
+      "verification": {
+        "status": "Inferred",
+        "source": "inferred",
+        "source_url": "https://borderless.so/stories/technical-university-munich-as-a-start-for-my-career-in-tech",
+        "last_verified": "2026-11-12",
+        "confidence": "low",
+        "notes": "Failed: official. Quote: \"Some students also decide to take internships or Semester Abroad, for which they have to skip the semester\""
+      }
+    },
+    "thesis_required": {
+      "value": "Yes, a bachelor's thesis is required.",
+      "options": [],
+      "complete": true,
+      "verification": {
+        "status": "Verified",
+        "source": "official",
+        "source_url": "https://www.tum.de/en/studies/degree-programs/detail/informatics-bachelor-of-science-bsc",
+        "last_verified": "2026-11-12",
+        "confidence": "high",
+        "notes": "Quote: \"The degree concludes with the bachelor’s thesis and the colloquium in the sixth semester.\""
+      }
+    },
+    "scholarships": {
+      "value": "500 to 1,800 euros per semester",
+      "options": [],
+      "complete": false,
+      "verification": {
+        "status": "Needs Review",
+        "source": "official",
+        "source_url": "https://www.tum.de/en/studies/fees/tuition",
+        "last_verified": "2026-11-12",
+        "confidence": "medium",
+        "notes": "Failed: incomplete. Quote: \"You can receive a one-time study grant of 500 to 1,800 euros per semester.\""
+      }
+    }
+  },
+  "country_rules": [
+    {
+      "topic": "Recognition of the Turkish diploma",
+      "question": "How is a Turkish high-school diploma (Lise Diploması) assessed for bachelor admission in Germany? Is a foundation year or Studienkolleg needed?",
+      "points": [
+        {
+          "point": "Not all foreign school-leaving certificates are recognised as Hochschulzugangsberechtigung for studies in Germany.",
+          "quote": "Not all foreign school-leaving certificates are recognised as  (in German: Hochschulzugangsberechtigung, HZB) for studies in Germany, as the education systems are too different for this.",
+          "source_url": "https://www.daad.de/en/studying-in-germany/requirements/studienkollegs/",
+          "source_title": "Studienkollegs (foundation courses)"
+        },
+        {
+          "point": "If your school qualifications are not recognised, then a foundation course, called Studienkolleg, is your potential gateway to a German higher education institution.",
+          "quote": "If your school qualifications are not recognised, then a foundation course, called „Studienkolleg“, is your potential gateway to a German higher education institution.",
+          "source_url": "https://www.study-in-germany.de/en/plan-your-studies/requirements/entrance-qualification/",
+          "source_title": "University entrance qualification"
+        },
+        {
+          "point": "You have to pass an entrance examination to be admitted to a Studienkolleg.",
+          "quote": "You have to pass an entrance examination to be admitted to a Studienkolleg.",
+          "source_url": "https://www.study-in-germany.de/en/plan-your-studies/requirements/entrance-qualification/",
+          "source_title": "University entrance qualification"
+        }
+      ],
+      "status": "Inferred",
+      "verification": {
+        "status": "Inferred",
+        "source": "country_default",
+        "source_url": "https://www.daad.de/en/studying-in-germany/requirements/studienkollegs/",
+        "last_verified": "2026-11-12",
+        "confidence": "low",
+        "notes": "National rule from the curated library, applied to this programme"
+      }
+    },
+    {
+      "topic": "How to apply",
+      "question": "How do international students apply for a bachelor's programme in Germany: which portal, which steps?",
+      "points": [
+        {
+          "point": "International students can apply through different portals depending on their situation.",
+          "quote": "Foreign students have to apply to the Stiftung für Hochschulzulassung, directly to the higher education institution, or to the (uni-assist) – this depends on which country they come from, what higher education entrance qualification they hold, and what subject they want to study.",
+          "source_url": "https://www.daad.de/en/studying-in-germany/requirements/application-process/",
+          "source_title": "Application process"
+        },
+        {
+          "point": "The application process may involve admission restrictions based on the subject.",
+          "quote": "For many degree programmes in Germany there are more prospective students than study places, so applicants first have to take part in an .",
+          "source_url": "https://www.daad.de/en/studying-in-germany/requirements/application-process/",
+          "source_title": "Application process"
+        }
+      ],
+      "status": "Inferred",
+      "verification": {
+        "status": "Inferred",
+        "source": "country_default",
+        "source_url": "https://www.daad.de/en/studying-in-germany/requirements/application-process/",
+        "last_verified": "2026-11-12",
+        "confidence": "low",
+        "notes": "National rule from the curated library, applied to this programme"
+      }
+    },
+    {
+      "topic": "National scholarships",
+      "question": "Which national scholarships exist for non-EU bachelor students in Germany?",
+      "points": [
+        {
+          "point": "International students can apply to numerous organisations for a scholarship.",
+          "quote": "International students can apply to numerous organisations for a scholarship, for example to the DAAD, to party-related foundations or business-affiliated institutions.",
+          "source_url": "https://www.daad.de/en/studying-in-germany/scholarships/",
+          "source_title": "Scholarships for studying in Germany"
+        },
+        {
+          "point": "You can find information on the various types of scholarships in the DAAD scholarship database.",
+          "quote": "You can find information on the various types of scholarships in the DAAD scholarship database, along with suitable offers.",
+          "source_url": "https://www.daad.de/en/studying-in-germany/scholarships/",
+          "source_title": "Scholarships for studying in Germany"
+        },
+        {
+          "point": "DAAD-Scholarships – An Overview",
+          "quote": "DAAD-Scholarships – An Overview",
+          "source_url": "https://www.daad.de/en/studying-in-germany/scholarships/",
+          "source_title": "Scholarships for studying in Germany"
+        }
+      ],
+      "status": "Inferred",
+      "verification": {
+        "status": "Inferred",
+        "source": "country_default",
+        "source_url": "https://www.daad.de/en/studying-in-germany/scholarships/",
+        "last_verified": "2026-11-12",
+        "confidence": "low",
+        "notes": "National rule from the curated library, applied to this programme"
+      }
+    },
+    {
+      "topic": "Recognition back in Türkiye (YÖK)",
+      "question": "How is a foreign university degree recognised in Türkiye (YÖK denklik), and what does it cost?",
+      "points": [
+        {
+          "point": "Foreign university degrees can be recognized in Türkiye through a formal application process.",
+          "quote": "Yurt dışındaki üniversitelerin ön lisans, lisans ya da yüksek lisans programlarından mezun Türkiye Cumhuriyeti vatandaşları.",
+          "source_url": "https://denklik.yok.gov.tr/tr/page/663",
+          "source_title": "YÖK diploma equivalence application (Denklik Başvurusu)"
+        },
+        {
+          "point": "There are specific fees for the recognition process set for the year 2026.",
+          "quote": "2026 yılı için aşağıda belirtilen ücretlerin alınmasına karar verilmiştir.",
+          "source_url": "https://denklik.yok.gov.tr/tr/page/663",
+          "source_title": "YÖK diploma equivalence application (Denklik Başvurusu)"
+        },
+        {
+          "point": "Applicants must provide proof of payment for the application fee.",
+          "quote": "Başvuru ücretinin yatırıldığını gösteren dekont.",
+          "source_url": "https://denklik.yok.gov.tr/tr/page/663",
+          "source_title": "YÖK diploma equivalence application (Denklik Başvurusu)"
+        }
+      ],
+      "status": "Inferred",
+      "verification": {
+        "status": "Inferred",
+        "source": "country_default",
+        "source_url": "https://denklik.yok.gov.tr/tr/page/663",
+        "last_verified": "2026-11-12",
+        "confidence": "low",
+        "notes": "National rule from the curated library, applied to this programme"
+      }
+    }
+  ],
+  "readiness": [
+    {
+      "area": "German",
+      "status": "check",
+      "finding": "Required: One of 4 accepted German tests. Compare with your German level (B1).",
+      "fact_status": "Needs Review"
+    },
+    {
+      "area": "Diploma",
+      "status": "check",
+      "finding": "Only the general rule was found, not the one for your diploma — check the country page.",
+      "fact_status": "Needs Review"
+    },
+    {
+      "area": "Budget",
+      "status": "gap",
+      "finding": "Tuition + living costs = €18,704/year (≈ ₺1,045,361); your budget is €12,000. Shortfall: €6,704/year (≈ ₺374,685).",
+      "fact_status": "Needs Review"
+    },
+    {
+      "area": "Deadline",
+      "status": "check",
+      "finding": "Deadline: 15.05. – 15.07. — plan backwards from it.",
+      "fact_status": "Verified"
+    },
+    {
+      "area": "Scholarship",
+      "status": "check",
+      "finding": "You need a scholarship. No programme scholarship was found; see the national scholarships in section 5.",
+      "fact_status": "Unknown"
+    }
+  ]
+}

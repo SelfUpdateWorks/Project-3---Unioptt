@@ -20,7 +20,7 @@ LABELS = {
     "duration": "Duration",
     "tuition_non_eu": "Tuition (non-EU)",
     "application_deadline": "Application deadline",
-    "language_requirement": "English requirement",
+    "language_requirement": "Language requirement",
     "academic_requirement": "Diploma requirement",
     "mandatory_placement": "Mandatory placement",
     "thesis_required": "Thesis / final project",
@@ -31,8 +31,10 @@ GAP_ICON = {"met": "✅", "gap": "❌", "check": "🔍"}
 
 # Next step for each readiness area that is a gap or needs checking (rule-based, no AI)
 NEXT_STEPS = {
-    "Diploma": "Ask the admissions office which routes exist for a Turkish Lise Diploması without AP "
-               "courses (e.g. AP exams in your last school year, a foundation year, or another route).",
+    "Diploma": "Ask the admissions office which routes exist for a Turkish Lise Diploması (e.g. extra "
+               "exams in your last school year, a foundation year or Studienkolleg, or another route).",
+    "German": "Plan your German: book a DSH or TestDaF course and exam early — reaching C1 from B1 "
+              "usually takes many months.",
     "Budget": "Close the funding gap: apply for the scholarships listed in section 5 and plan "
               "a family budget in TRY with a safety margin for exchange-rate changes.",
     "English": "Check your IELTS section scores against the requirement; retake the test if any "

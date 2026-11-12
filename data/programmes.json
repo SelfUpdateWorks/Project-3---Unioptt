@@ -1,0 +1,18 @@
+{
+  "groningen": {
+    "university": "University of Groningen",
+    "name": "Artificial Intelligence",
+    "degree": "bachelor",
+    "country": "NL",
+    "domain": "rug.nl",
+    "teaching_language": "English"
+  },
+  "tum": {
+    "university": "Technical University of Munich",
+    "name": "Informatics",
+    "degree": "bachelor",
+    "country": "DE",
+    "domain": "tum.de",
+    "teaching_language": "German"
+  }
+}

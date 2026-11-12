@@ -1,0 +1,246 @@
+{
+  "name": "Unioptt Programme Research — wrapper",
+  "nodes": [
+    {
+      "name": "Request a report",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        100,
+        300
+      ],
+      "parameters": {
+        "formTitle": "Unioptt — Programme Due Diligence Report",
+        "formDescription": "Pick a programme. The agent researches the official pages, checks every fact and sends the report summary to Telegram (2–3 minutes).",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Programme",
+              "fieldName": "programme_key",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "groningen"
+                  },
+                  {
+                    "option": "tum"
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "responseMode": "onReceived",
+        "options": {
+          "respondWithOptions": {
+            "values": {
+              "respondWith": "text",
+              "formSubmittedText": "Research started. The report summary will arrive on Telegram in 2–3 minutes."
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Run research agent (API)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        300,
+        300
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://YOUR-TUNNEL-URL.ngrok-free.app/research",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ programme_key: $json.programme_key }) }}",
+        "options": {
+          "timeout": 300000,
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Report OK?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "leftValue": "={{ $json.statusCode }}",
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              },
+              "rightValue": 200
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Send report summary (Telegram)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        700,
+        300
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "=📋 <b>{{ $json.body.programme }}</b> · intake {{ $json.body.intake }}\n\n✅ Verified: {{ $json.body.verified }} / {{ $json.body.total_facts }}\n⚠️ Needs Review: {{ $json.body.needs_review }}\n🔹 Inferred: {{ $json.body.inferred }}\n❓ Unknown: {{ $json.body.unknown }}\n\n💶 Total per year: €{{ $json.body.total_eur_per_year }} ≈ ₺{{ $json.body.total_try_per_year }}\n❌ Main gaps: {{ $json.body.main_gaps.join(\", \") || \"none\" }}\n\n{{ $json.body.gaps.join(\"\\n\") }}\n\nFull report with sources: reports/ folder of the project.",
+        "additionalFields": {
+          "parse_mode": "HTML",
+          "appendAttribution": false
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "name": "Telegram bot"
+        }
+      }
+    },
+    {
+      "name": "Log run (Airtable)",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        900,
+        300
+      ],
+      "parameters": {
+        "resource": "record",
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "mode": "id",
+          "value": "YOUR_AIRTABLE_BASE_ID"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "id",
+          "value": "YOUR_AIRTABLE_TABLE_ID"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Programme": "={{ $('Run research agent (API)').item.json.body.programme }}",
+            "Verified": "={{ $('Run research agent (API)').item.json.body.verified }}",
+            "NeedsReview": "={{ $('Run research agent (API)').item.json.body.needs_review }}",
+            "Unknown": "={{ $('Run research agent (API)').item.json.body.unknown }}",
+            "MainGaps": "={{ $('Run research agent (API)').item.json.body.main_gaps.join(', ') }}",
+            "TotalEUR": "={{ $('Run research agent (API)').item.json.body.total_eur_per_year }}",
+            "RunDate": "={{ $now.toISO() }}",
+            "Status": "success"
+          }
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "credentials": {
+        "airtableTokenApi": {
+          "name": "Airtable token"
+        }
+      }
+    },
+    {
+      "name": "Alert: agent failed (Telegram)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        700,
+        450
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "=⚠️ The research agent failed (HTTP {{ $json.statusCode }}): {{ $json.body.detail || $json.body }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "name": "Telegram bot"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Request a report": {
+      "main": [
+        [
+          {
+            "node": "Run research agent (API)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run research agent (API)": {
+      "main": [
+        [
+          {
+            "node": "Report OK?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Report OK?": {
+      "main": [
+        [
+          {
+            "node": "Send report summary (Telegram)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Alert: agent failed (Telegram)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send report summary (Telegram)": {
+      "main": [
+        [
+          {
+            "node": "Log run (Airtable)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "note": "Placeholders: tunnel URL, Telegram chat ID, Airtable base/table IDs. Credentials are connected inside n8n, never stored here."
+  }
+}

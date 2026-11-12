@@ -5,12 +5,23 @@ for requirements — EVERY accepted option, alternative route and exemption.
 Principle: extract everything here; match it to the student later (box 9).
 The LLM does NOT decide whether a fact is complete (Python, box 4) or true (Python, box 5).
 """
+import re
 from typing import Literal, Optional
 
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
 
 MAX_PAGE_CHARS = 60_000  # about 15,000 tokens: enough for one programme page
+
+# A line that is nothing but a link (a menu item): "*   [News](https://...)"
+MENU_LINE = re.compile(r"^\s*[*\-]?\s*\[[^\]]*\]\([^)]*\)\s*$")
+
+
+def strip_menus(text: str) -> str:
+    """Remove menu lines before the LLM reads the page. Some university pages (e.g. TUM) start
+    with ~80,000 characters of menus, which pushed the real content past the reading limit."""
+    kept = [line for line in text.splitlines() if not MENU_LINE.match(line)]
+    return re.sub(r"\n{3,}", "\n\n", "\n".join(kept))
 
 
 class Option(BaseModel):
@@ -49,10 +60,13 @@ class ProgrammeFacts(BaseModel):
     faculty: Optional[str] = Field(description="Name of the faculty that runs this programme, if the page says so")
     teaching_language: Fact = Field(description="Language the programme is taught in")
     duration: Fact = Field(description="Length of the programme (years and/or ECTS)")
-    tuition_non_eu: Fact = Field(description="Yearly tuition fee for non-EU/EEA students, with currency and year")
+    tuition_non_eu: Fact = Field(
+        description="Tuition fee for non-EU/EEA students, with currency, and whether it is per year "
+                    "or per semester (write 'per semester' if so)")
     application_deadline: Fact = Field(description="Application deadline for non-EU/international students")
     language_requirement: Fact = Field(
-        description="Proof of English: every accepted test with its minimum scores, and every exemption")
+        description="Proof of the programme's teaching language (English or German): every accepted "
+                    "test or certificate with its minimum score or level, and every exemption")
     academic_requirement: Fact = Field(
         description="Which high-school diploma is accepted for students from the student's country, "
                     "with all extra conditions, subject requirements (e.g. maths) and alternative routes")
@@ -83,9 +97,10 @@ def extract_from_page(page_text: str, programme: dict, intake: str,
     llm = ChatOpenAI(model="gpt-4o-mini", temperature=0).with_structured_output(ProgrammeFacts)
     user_msg = (
         f"Programme: {programme['university']} – {programme['degree']} {programme['name']}\n"
+        f"Teaching language: {programme.get('teaching_language', 'unknown')}\n"
         f"Faculty: {faculty or 'unknown'}\n"
         f"Target intake: {intake}\n"
         f"Student: {student}\n\n"
-        f"PAGE TEXT:\n{page_text[:MAX_PAGE_CHARS]}"
+        f"PAGE TEXT:\n{strip_menus(page_text)[:MAX_PAGE_CHARS]}"
     )
     return llm.invoke([("system", SYSTEM_PROMPT), ("human", user_msg)])

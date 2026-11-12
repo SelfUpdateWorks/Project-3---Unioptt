@@ -69,9 +69,12 @@ def check_right_intake(freshness: str) -> bool:
 
 def verify_fact(fact: dict, page_text: str, domain: str) -> dict:
     """Run the four checks on one fact and return its checks, status and VerificationRecord."""
+    bad_options = []
     if fact["options"]:
         # Requirements with options: every option is checked with its own quote
-        quote_ok = all(check_quote_on_page(o["quote"], page_text) for o in fact["options"])
+        bad_options = [o["option"] for o in fact["options"]
+                       if not check_quote_on_page(o["quote"], page_text)]
+        quote_ok = not bad_options
         value_ok = all(check_value_in_quote(o["option"], o["quote"]) for o in fact["options"])
     else:
         quote_ok = check_quote_on_page(fact["quote"], page_text)
@@ -92,6 +95,9 @@ def verify_fact(fact: dict, page_text: str, domain: str) -> dict:
         status, source, confidence = "Needs Review", "official", "medium"
 
     failed = [name for name, ok in checks.items() if not ok]
+    if bad_options:   # say WHICH option's quote was not word for word on the page
+        failed[failed.index("quote_on_page")] = ("quote_on_page (not word for word: "
+                                                 + "; ".join(o[:40] for o in bad_options) + ")")
     if not fact["complete"]:
         failed.append("incomplete")
     notes = f"Quote: \"{fact['quote'] or ''}\""

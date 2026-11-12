@@ -18,7 +18,7 @@ from src.tools import ToolError, read_page, search_web
 from src.readiness import assess_readiness
 from src.report import save_report
 from src.schemas import VerificationRecord
-from src.verify import verify_fact
+from src.verify import check_official, check_quote_on_page, verify_fact
 
 # The key facts every report must try to verify (Tier 1)
 KEY_FACTS = [
@@ -40,7 +40,7 @@ FACT_QUERIES = {
     "duration": "programme duration years ECTS",
     "tuition_non_eu": "tuition fee non-EU students",
     "application_deadline": "application deadline",
-    "language_requirement": "English language requirements IELTS TOEFL",
+    "language_requirement": "language requirements for international applicants",
     "academic_requirement": "admission requirements international diploma",
     "mandatory_placement": "internship placement",
     "thesis_required": "bachelor thesis",
@@ -53,6 +53,9 @@ DIPLOMA_KEYWORDS = {"Türkiye": ["turkey", "türkiye", "turkish", "lise"]}
 # Sites the agent never reads (social media, search engines' own pages)
 BLOCKED_SITES = ["instagram.com", "facebook.com", "tiktok.com", "youtube.com",
                  "linkedin.com", "x.com", "twitter.com", "reddit.com", "tavily.com"]
+
+# Pages that never contain programme facts (contact forms, news, feeds): never read them
+SKIP_PAGE_WORDS = ["/contact", "/news", "rss", "/press", "/events", "/login", "/search"]
 
 # Words in a page address or title that mean "wrong degree level"
 WRONG_DEGREE_WORDS = {
@@ -97,8 +100,16 @@ def on_site(url: str, domain: str) -> bool:
     return host == domain or host.endswith("." + domain)
 
 
+def clean_url(url: str) -> str:
+    """'…/artificial-intelligence#programme' -> '…/artificial-intelligence' (same page, one address)."""
+    return url.split("#", 1)[0]
+
+
 def is_blocked(url: str) -> bool:
-    return any(on_site(url, site) for site in BLOCKED_SITES)
+    """Social media, or pages that never hold programme facts (contact, news, feeds)."""
+    path = urlparse(url).path.lower()
+    return (any(on_site(url, site) for site in BLOCKED_SITES)
+            or any(word in path for word in SKIP_PAGE_WORDS))
 
 
 def is_wrong_degree(result: dict, degree: str) -> bool:
@@ -121,8 +132,9 @@ def find_official_page(state: AgentState) -> dict:                  # box 2
     seen = state.get("seen_urls", [])
 
     # 1) Follow official "more info" links found on earlier pages (no search needed)
-    links = [u for u in state.get("todo_links", [])
-             if on_site(u, p["domain"]) and u not in seen][:3]
+    todo = list(dict.fromkeys(clean_url(u) for u in state.get("todo_links", [])))
+    links = [u for u in todo
+             if on_site(u, p["domain"]) and u not in seen and not is_blocked(u)][:3]
 
     # 2) Search for facts that were not found at all (incomplete ones are handled by links)
     base = f"{p['university']} {p['degree']} {p['name']}"
@@ -142,6 +154,7 @@ def find_official_page(state: AgentState) -> dict:                  # box 2
         except ToolError:
             continue                      # no results for this query: try the next one
         for r in results:
+            r = {**r, "url": clean_url(r["url"])}
             if r["url"] in seen or r["url"] in found or r["url"] in links:
                 continue                  # already have it
             if (is_blocked(r["url"]) or is_wrong_degree(r, p["degree"])
@@ -165,7 +178,7 @@ def final_url(text: str, requested: str) -> str:
     """If the page redirected, Jina writes 'Final URL:' at the top. Use that as the real source."""
     for line in text.splitlines()[:10]:
         if line.startswith("Final URL:"):
-            return line.split(":", 1)[1].strip()
+            return clean_url(line.split(":", 1)[1].strip())
     return requested
 
 
@@ -228,14 +241,17 @@ def links_matching(text: str, keywords: list[str]) -> list[str]:
     return [url for label, url in links if any(k in label.lower() for k in keywords)]
 
 
-def is_complete(name: str, fact: dict, keywords: list[str]) -> bool:
+def is_complete(name: str, fact: dict, keywords: list[str], teaching_language: str = "English") -> bool:
     """Python decides (not the LLM) whether a fact gives the concrete answer for this student."""
     text = " ".join([fact["value"] or "", fact["quote"] or ""]
                     + [o["option"] for o in fact["options"]]).lower()
     if name == "academic_requirement":
         return any(k in text for k in keywords)          # names the student's diploma/country
     if name == "language_requirement":
-        return any(ch.isdigit() for ch in text)          # gives at least one concrete score
+        if "german" in teaching_language.lower():        # a level (C1) or a test level (DSH-2) is concrete
+            return bool(re.search(r"\b[abc][12]\b|dsh|testdaf", text))
+        # English: needs a real score (6.5, 90, 180) — test names like "C1 Advanced" alone are not enough
+        return bool(re.search(r"\d", re.sub(r"\b[abc][12]\b", "", text)))
     if name == "scholarships":
         return bool(fact["options"])                     # names at least one actual scholarship
     return bool(fact["value"] or fact["options"])        # any concrete value
@@ -253,9 +269,18 @@ def links_near_quote(text: str, quote: str | None, window: int = 800) -> list[st
     return [url for _, url in re.findall(r"\[([^\]]*)\]\((https?://[^)\s]+)\)", nearby)]
 
 
+def quote_found(fact: dict, page_text: str) -> bool:
+    """Is the evidence really on the page? (The same test as check 2 in box 5.)"""
+    quotes = [o["quote"] for o in fact["options"]] or [fact["quote"]]
+    return all(check_quote_on_page(q, page_text) for q in quotes)
+
+
 def score(fact: dict) -> int:
-    """Which version of a fact is better: complete beats incomplete, current beats older."""
-    return 2 * fact["complete"] + (fact["freshness"] == "current")
+    """Which version of a fact is better: official source first, then complete, then real evidence,
+    then current year. (A blog can never replace the university's own page; between two complete
+    versions, the one whose quote is really on the page wins over a made-up quote.)"""
+    return (8 * fact["official"] + 4 * fact["complete"] + 2 * fact["quote_ok"]
+            + (fact["freshness"] == "current"))
 
 
 def extract_facts(state: AgentState) -> dict:                       # box 4
@@ -287,7 +312,8 @@ def extract_facts(state: AgentState) -> dict:                       # box 4
         for name, fact in data.items():
             if not fact["found"]:
                 continue
-            fact["complete"] = is_complete(name, fact, keywords)
+            fact["complete"] = is_complete(name, fact, keywords,
+                                           state["programme"].get("teaching_language", "English"))
             if not fact["value"] and fact["options"]:
                 fact["value"] = f"{len(fact['options'])} option(s), see list"
             if not fact["complete"]:
@@ -296,7 +322,9 @@ def extract_facts(state: AgentState) -> dict:                       # box 4
                 new_links += links_near_quote(page["text"], fact["quote"])  # Python's backup
             new = {"value": fact["value"], "quote": fact["quote"], "options": fact["options"],
                    "complete": fact["complete"], "source_url": page["url"],
-                   "page_year": page_year, "freshness": fresh}
+                   "page_year": page_year, "freshness": fresh,
+                   "quote_ok": quote_found(fact, page["text"]),
+                   "official": check_official(page["url"], state["programme"]["domain"])}
             old = facts.get(name)
             if old is None or score(new) > score(old):
                 facts[name] = new
@@ -342,6 +370,7 @@ def mark_unknown(state: AgentState) -> dict:
     for name in unknown:
         facts[name] = {"value": None, "quote": None, "options": [], "complete": False,
                        "source_url": None, "page_year": None, "freshness": "unknown",
+                       "quote_ok": False, "official": False,
                        "status": "Unknown", "checks": {},
                        "verification": VerificationRecord(
                            status="Unknown", source="unknown", confidence="none",
@@ -374,7 +403,8 @@ def cost_in_try(state: AgentState) -> dict:                         # box 8
 def readiness(state: AgentState) -> dict:                           # box 9
     """Compare the profile with the requirements: met / gap / check (rules in readiness.py)."""
     gaps = assess_readiness(state["profile"], state["facts"], state.get("costs", {}),
-                            state.get("country_rules", []))
+                            state.get("country_rules", []),
+                            teaching_language=state["programme"].get("teaching_language", "English"))
     counts = {s: sum(1 for g in gaps if g["status"] == s) for s in ("met", "gap", "check")}
     return {"gaps": gaps,
             "log": [f"9 readiness: {counts['met']} met, {counts['gap']} gap(s), {counts['check']} to check"]}
@@ -418,3 +448,10 @@ def build_graph():
     g.add_edge("readiness", "write_report")
     g.add_edge("write_report", END)
     return g.compile()
+
+
+def run_agent(programme: dict, profile: dict) -> dict:
+    """Run the whole agent for one programme and one student profile (used by run.py and api.py)."""
+    return build_graph().invoke({"programme": programme,
+                                 "intake": profile["target_intake"],
+                                 "profile": profile})

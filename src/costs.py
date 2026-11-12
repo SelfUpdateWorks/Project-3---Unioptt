@@ -31,7 +31,8 @@ class LivingCost(BaseModel):
 
 
 PROMPT = """From the text below, find the monthly cost of living for ONE student (rent, food,
-insurance, transport, etc.), WITHOUT tuition fees. Use only this text; never guess.
+insurance, transport, etc.), WITHOUT tuition fees. If the text only gives the yearly amount a
+student must prove for a visa, use that divided by 12. Use only this text; never guess.
 If you add up a list, copy the WHOLE list into the quote, every line, exactly as written."""
 
 
@@ -41,9 +42,12 @@ def euro_amounts(text: str) -> list[float]:
 
 
 def number_matches_quote(monthly: float, quote: str) -> bool:
-    """Python checks the LLM: the number is in the quote, or is the sum of the € amounts in it."""
+    """Python checks the LLM: the number is in the quote, or is the sum of the € amounts in it,
+    or the quote gives a yearly amount and the monthly number is that divided by 12."""
     if str(int(monthly)) in numbers_in(quote):
         return True
+    if any(abs(int(n) - monthly * 12) <= 12 for n in numbers_in(quote)):
+        return True   # e.g. '11,904 euros per year' -> 992 per month
     return abs(sum(euro_amounts(quote)) - monthly) <= 1
 
 
@@ -54,8 +58,12 @@ def estimate_living_costs(country: str) -> dict:
     """Ask the RAG library for the monthly cost of living in this country.
     Python accepts the LLM's answer only if the quote is on the page and the number matches it;
     otherwise it asks again (max MAX_TRIES per passage)."""
+    # Two searches: a cost-of-living overview, and the official minimum a student must show for
+    # a visa (Germany's blocked account) — a legal estimate of living costs.
     hits = search("monthly cost of living for international students: rent, groceries, insurance",
                   country=country, topic="costs", top_k=4)
+    hits += search("amount of money per year a student must prove for a visa, blocked account",
+                   country=country, topic="costs", top_k=2)
     llm = ChatOpenAI(model="gpt-4o-mini", temperature=0).with_structured_output(LivingCost)
     for hit in hits:
         for _ in range(MAX_TRIES):
@@ -71,9 +79,19 @@ def estimate_living_costs(country: str) -> dict:
 
 
 def tuition_eur(tuition_fact: dict | None) -> int | None:
-    """'€19800 per year' -> 19800 (the largest amount of at least 1,000)."""
-    nums = [int(n) for n in numbers_in((tuition_fact or {}).get("value") or "") if int(n) >= 1000]
-    return max(nums) if nums else None
+    """Yearly tuition in EUR: '€19800 per year' -> 19800; '€3,000 per semester' -> 6000."""
+    value = (tuition_fact or {}).get("value") or ""
+    amounts = euro_amounts(value) + [float(n.replace(",", "")) for n in
+                                     re.findall(r"(\d[\d,]*)\s?(?:EUR|euros?)", value, re.IGNORECASE)]
+    amounts = [a for a in amounts if a >= 100] or [int(n) for n in numbers_in(value) if int(n) >= 1000]
+    if not amounts:
+        return None
+    fee = max(amounts)
+    quote = (tuition_fact or {}).get("quote") or ""
+    if re.search(r"semester", value + " " + quote, re.IGNORECASE) and not re.search(
+            r"per year|annual|yearly", value, re.IGNORECASE):
+        fee *= 2   # the fee is per semester: two semesters per year
+    return int(fee)
 
 
 def build_costs(tuition_fact: dict | None, country: str) -> dict:
