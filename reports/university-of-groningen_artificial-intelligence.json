@@ -19,7 +19,7 @@
   },
   "requirements": {
     "language": {
-      "value": "One of 5 accepted English tests.",
+      "value": "One of 5 accepted English tests",
       "options": [
         {
           "kind": "requirement",
@@ -44,7 +44,7 @@
         {
           "kind": "requirement",
           "option": "TOEFL iBT: overall score 90 (min. 21 in Reading, Listening, and Speaking, 24 in Writing)",
-          "quote": "TOEFL iBT: overall score 90 (min. 21 in Reading, Listening, and Speaking, 24 in Writing)"
+          "quote": "TOEFL iBT*: overall score 90 (min. 21 in Reading, Listening, and Speaking, 24 in Writing)"
         }
       ],
       "complete": true,
@@ -54,7 +54,7 @@
         "source_url": "https://www.rug.nl/education/application-enrolment-tuition-fees/admission/non-dutch-qualification/bachelor/bachelor-entry-requirements/language-requirements-and-exemptions",
         "last_verified": "2026-11-12",
         "confidence": "medium",
-        "notes": "Failed: quote_on_page (not word for word: TOEFL iBT: overall score 90 (min. 21 in ), right_intake. Quote: \"We accept the following language tests:\""
+        "notes": "Failed: right_intake. Quote: \"We accept the following language tests:\""
       }
     },
     "academic": {
@@ -64,6 +64,11 @@
           "kind": "requirement",
           "option": "Lise Diploması with at least 4 content-based AP courses externally examined by the College Board (grades 3-5)",
           "quote": "Lise Diploması with at least 4 content-based* AP courses externally examined by the College Board (grades 3-5)"
+        },
+        {
+          "kind": "condition",
+          "option": "May include only 1 of the specified AP courses at the most",
+          "quote": "May include only 1 of the following AP courses at the most: AP Capstone: AP Research/AP Seminar; AP Music History/Music Theory; AP Studio Art: 2-D Design/2-D Art and Design; AP Studio Art: 3-D Design/3-D Art and Design; AP Studio Art: Drawing/Drawing"
         }
       ],
       "complete": true,
@@ -194,17 +199,12 @@
       }
     },
     "scholarships": {
-      "value": "€1,000 for excellent Dutch and international students (both EU and Non-EU)",
+      "value": "€1,000 for excellent Dutch and international students",
       "options": [
         {
           "kind": "requirement",
           "option": "Dirk Smilde Scholarship",
           "quote": "The scholarship amounts to €1,000 a month. Regarding the duration of the scholarship, we offer a maximum of three months."
-        },
-        {
-          "kind": "requirement",
-          "option": "Florentino Garcia Martinez Research Master Scholarship",
-          "quote": "This scholarship was established by Jan Overmeer. The scholarship is specifically for Research Master’s students in the fields of Hebrew Bible, early Judaism and Dead Sea Scrolls."
         }
       ],
       "complete": true,
@@ -214,7 +214,7 @@
         "source_url": "https://www.rug.nl/research/centre-for-religious-studies/research-centres/qumran-institute/organisation/grants-and-scholarships",
         "last_verified": "2026-11-12",
         "confidence": "high",
-        "notes": "Quote: \"€ 1,000 for excellent Dutch and international students (both EU and Non-EU), wishing to specialize in the fields of Hebrew Bible, early Judaism and Dead Sea Scrolls\""
+        "notes": "Quote: \"*   € 1,000\n*   for excellent Dutch and international students (both EU and Non-EU), wishing to specialize in the fields of Hebrew Bible, early Judaism and Dead Sea Scrolls\""
       }
     }
   },
@@ -246,6 +246,12 @@
         {
           "point": "Check with the institution whether you need to register via Studielink.",
           "quote": "you should first check with the institution of your choice whether you are required to register via Studielink.",
+          "source_url": "https://www.studyinnl.org/plan-your-stay/how-to-apply",
+          "source_title": "How to apply"
+        },
+        {
+          "point": "Application deadlines are 15 January for numerus fixus programmes and 1 May for all other programmes.",
+          "quote": "15 January for a numerus fixus programme\n*   1 May for all other study programmes.",
           "source_url": "https://www.studyinnl.org/plan-your-stay/how-to-apply",
           "source_title": "How to apply"
         }
@@ -298,14 +304,14 @@
           "source_title": "YÖK diploma equivalence application (Denklik Başvurusu)"
         },
         {
-          "point": "There are specific fees for the recognition process set for the year 2026.",
-          "quote": "2026 yılı için aşağıda belirtilen ücretlerin alınmasına karar verilmiştir.",
+          "point": "The application requires specific documents including a recognition or equivalence certificate.",
+          "quote": "ilgili yükseköğretim kurumunun faaliyet gösterdiği ülke yetkili makamlarınca düzenlenmiş tanıma veya denklik belgesi aslı,",
           "source_url": "https://denklik.yok.gov.tr/tr/page/663",
           "source_title": "YÖK diploma equivalence application (Denklik Başvurusu)"
         },
         {
-          "point": "Applicants must provide proof of payment for the application fee.",
-          "quote": "Başvuru ücretinin yatırıldığını gösteren dekont.",
+          "point": "There are fees associated with the application for recognition of foreign degrees.",
+          "quote": "2026 yılı için aşağıda belirtilen ücretlerin alınmasına karar verilmiştir.",
           "source_url": "https://denklik.yok.gov.tr/tr/page/663",
           "source_title": "YÖK diploma equivalence application (Denklik Başvurusu)"
         }
@@ -349,7 +355,7 @@
     {
       "area": "Scholarship",
       "status": "check",
-      "finding": "You need a scholarship. The university lists: Dirk Smilde Scholarship; Florentino Garcia Martinez Research Master Scholarship. Check who can apply, the amount and the deadline for each.",
+      "finding": "You need a scholarship. The university lists: Dirk Smilde Scholarship. Check who can apply, the amount and the deadline for each.",
       "fact_status": "Verified"
     }
   ]

@@ -15,7 +15,7 @@
 | Thesis / final project | Bachelor's Project (15 EC) | ✅ Verified |
 
 ## 2. Key requirements
-- **Language requirement:** One of 5 accepted English tests. — ⚠️ Needs Review
+- **Language requirement:** One of 5 accepted English tests — ⚠️ Needs Review
   - _requirement_: Cambridge English: C1 Advanced (CAE) or C2 Proficiency (CPE) with a min. score of 180
   - _requirement_: IELTS (Academic): overall score 6.5 (min. 6.5 in every category)
   - _requirement_: LanguageCert Academic: overall score 70 (min. 70 in every category)
@@ -23,6 +23,7 @@
   - _requirement_: TOEFL iBT: overall score 90 (min. 21 in Reading, Listening, and Speaking, 24 in Writing)
 - **Diploma requirement:** Lise Diploması with at least 4 content-based AP courses externally examined by the College Board (grades 3-5) — ✅ Verified
   - _requirement_: Lise Diploması with at least 4 content-based AP courses externally examined by the College Board (grades 3-5)
+  - _condition_: May include only 1 of the specified AP courses at the most
 - **Application deadline:** 01 May 2027 — ✅ Verified
 - **How to apply:** International students apply via the Studielink tool. — 🔹 Inferred (national rule)
 
@@ -37,13 +38,12 @@
 
 ## 4. Recognition of the Turkish diploma
 - **This university:** Lise Diploması with at least 4 content-based AP courses externally examined by the College Board (grades 3-5) — ✅ Verified
-- **Recognition back in Türkiye (YÖK):** Foreign university degrees can be recognized in Türkiye through a formal application process. There are specific fees for the recognition process set for the year 2026. Applicants must provide proof of payment for the application fee. — 🔹 Inferred
+- **Recognition back in Türkiye (YÖK):** Foreign university degrees can be recognized in Türkiye through a formal application process. The application requires specific documents including a recognition or equivalence certificate. There are fees associated with the application for recognition of foreign degrees. — 🔹 Inferred
 - _Not legal advice: recognition rules are reported with their source._
 
 ## 5. Scholarships
 - **From the university** — ✅ Verified:
   - _requirement_: Dirk Smilde Scholarship
-  - _requirement_: Florentino Garcia Martinez Research Master Scholarship
 - **National (🔹 Inferred — check eligibility for Turkish citizens before relying on them):**
   - The MENA Scholarship Programme (MSP) exists for non-EU bachelor students.
   - The NL scholarship (Holland Scholarship) is available for non-EU bachelor students.
@@ -53,10 +53,10 @@
 - ❌ **Diploma:** Your diploma (Anatolian High School) alone is not enough: the rule also asks for AP courses (College Board). Your profile shows none.
 - ❌ **Budget:** Tuition + living costs = €35,220/year (≈ ₺1,968,435); your budget is €12,000. Shortfall: €23,220/year (≈ ₺1,297,759).
 - ✅ **Deadline:** Apply by 01 May 2027: 170 days from today. Language tests and documents must be ready before then.
-- 🔍 **Scholarship:** You need a scholarship. The university lists: Dirk Smilde Scholarship; Florentino Garcia Martinez Research Master Scholarship. Check who can apply, the amount and the deadline for each.
+- 🔍 **Scholarship:** You need a scholarship. The university lists: Dirk Smilde Scholarship. Check who can apply, the amount and the deadline for each.
 
 ## 7. What's missing & next steps
-- ⚠️ Needs Review **Language requirement** — Failed: quote_on_page (not word for word: TOEFL iBT: overall score 90 (min. 21 in ), right_intake
+- ⚠️ Needs Review **Language requirement** — Failed: right_intake
 - ❓ Unknown **Mandatory placement** — not found on the official pages
 
 **Next steps:**
@@ -89,7 +89,7 @@ Source: https://www.rug.nl/bachelors/artificial-intelligence/?lang=en (page year
 Quote: “non-EU/EEA students | 01 May 2027 | 01 September 2027”
 
 **Language requirement** — ⚠️ Needs Review
-Checks: ✓ official · ✗ quote_on_page · ✓ value_in_quote · ✗ right_intake
+Checks: ✓ official · ✓ quote_on_page · ✓ value_in_quote · ✗ right_intake
 Source: https://www.rug.nl/education/application-enrolment-tuition-fees/admission/non-dutch-qualification/bachelor/bachelor-entry-requirements/language-requirements-and-exemptions (page year: 2026/27)
 Quote: “We accept the following language tests:”
 
@@ -106,18 +106,19 @@ Quote: “You will round off your bachelor's degree with a small research projec
 **Scholarships (university)** — ✅ Verified
 Checks: ✓ official · ✓ quote_on_page · ✓ value_in_quote · ✓ right_intake
 Source: https://www.rug.nl/research/centre-for-religious-studies/research-centres/qumran-institute/organisation/grants-and-scholarships (page year: not stated)
-Quote: “€ 1,000 for excellent Dutch and international students (both EU and Non-EU), wishing to specialize in the fields of Hebrew Bible, early Judaism and Dead Sea Scrolls”
+Quote: “€ 1,000 / for excellent Dutch and international students (both EU and Non-EU), wishing to specialize in the fields of Hebrew Bible, early Judaism and Dead Sea Scrolls”
 
 **Mandatory placement** — ❓ Unknown
 
 **Country rules (national sources, Inferred):**
 - How to apply: “Studielink is the official registration and application portal for programmes at Dutch higher education institutions.” — https://www.studyinnl.org/plan-your-stay/how-to-apply
 - How to apply: “you should first check with the institution of your choice whether you are required to register via Studielink.” — https://www.studyinnl.org/plan-your-stay/how-to-apply
+- How to apply: “15 January for a numerus fixus programme / 1 May for all other study programmes.” — https://www.studyinnl.org/plan-your-stay/how-to-apply
 - National scholarships: “MENA Scholarship Programme (MSP)” — https://www.studyinnl.org/finances/scholarships
 - National scholarships: “NL scholarship (Holland Scholarship)” — https://www.studyinnl.org/finances/scholarships
 - Recognition back in Türkiye (YÖK): “Yurt dışındaki üniversitelerin ön lisans, lisans ya da yüksek lisans programlarından mezun Türkiye Cumhuriyeti vatandaşları.” — https://denklik.yok.gov.tr/tr/page/663
+- Recognition back in Türkiye (YÖK): “ilgili yükseköğretim kurumunun faaliyet gösterdiği ülke yetkili makamlarınca düzenlenmiş tanıma veya denklik belgesi aslı,” — https://denklik.yok.gov.tr/tr/page/663
 - Recognition back in Türkiye (YÖK): “2026 yılı için aşağıda belirtilen ücretlerin alınmasına karar verilmiştir.” — https://denklik.yok.gov.tr/tr/page/663
-- Recognition back in Türkiye (YÖK): “Başvuru ücretinin yatırıldığını gösteren dekont.” — https://denklik.yok.gov.tr/tr/page/663
 - Living costs: “Rent: € 561 / Groceries: € 244 / Study books and materials: € 41 / Transportation: € 67 / Leisure and sports: € 239 / Basic Dutch health insurance (when working in NL): € 133” — https://www.studyinnl.org/finances/daily-student-expenses-and-cost-of-living-in-the-netherlands
 - Exchange rate: https://api.frankfurter.dev/v1/latest?base=EUR&symbols=TRY
 
