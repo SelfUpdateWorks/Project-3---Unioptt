@@ -66,6 +66,16 @@
               "neverError": true
             }
           }
+        },
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "ngrok-skip-browser-warning",
+              "value": "true"
+            }
+          ]
         }
       }
     },
@@ -79,17 +89,36 @@
       ],
       "parameters": {
         "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
           "conditions": [
             {
+              "id": "status-200",
               "leftValue": "={{ $json.statusCode }}",
+              "rightValue": 200,
               "operator": {
                 "type": "number",
                 "operation": "equals"
-              },
-              "rightValue": 200
+              }
+            },
+            {
+              "id": "has-programme",
+              "leftValue": "={{ $json.body.programme }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
             }
-          ]
-        }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true
       }
     },
     {
@@ -172,7 +201,7 @@
         "resource": "message",
         "operation": "sendMessage",
         "chatId": "YOUR_TELEGRAM_CHAT_ID",
-        "text": "=⚠️ The research agent failed (HTTP {{ $json.statusCode }}): {{ $json.body.detail || $json.body }}",
+        "text": "=⚠️ The research agent failed (HTTP {{ $json.statusCode }}). {{ $json.headers && $json.headers[\"ngrok-error-code\"] ? \"The tunnel is offline: start uvicorn and ngrok on the laptop.\" : ($json.body.detail || \"\") }}",
         "additionalFields": {
           "appendAttribution": false
         }

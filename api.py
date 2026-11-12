@@ -56,7 +56,7 @@ def research(req: ResearchRequest) -> dict:
         raise HTTPException(status_code=400, detail=f"Programme is missing: {', '.join(missing)}")
 
     try:
-        result = run_agent(programme, req.profile or SAMPLE_PROFILE)
+        result = run_agent(programme, req.profile or SAMPLE_PROFILE, live=True)
     except Exception as e:   # n8n's error branch receives this message
         raise HTTPException(status_code=500, detail=f"Agent failed: {e}")
 

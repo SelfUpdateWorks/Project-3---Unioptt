@@ -99,8 +99,9 @@ def check_academic(profile: dict, fact: dict | None) -> list[dict]:
 def check_budget(profile: dict, tuition: dict | None, costs: dict) -> dict:
     fee = costs.get("tuition_eur")        # yearly tuition, worked out in costs.py (box 8)
     if fee is None:
-        nums = [int(n) for n in re.findall(r"\d+", (tuition or {}).get("value", "").replace(",", "")
-                                           .replace(".", "")) if int(n) >= 1000]
+        value = (tuition or {}).get("value") or ""     # an Unknown fact has value None
+        nums = [int(n) for n in re.findall(r"\d+", value.replace(",", "").replace(".", ""))
+                if int(n) >= 1000]
         if not nums:
             return item("Budget", "check", "Tuition fee not found — cannot compare with your budget.", tuition)
         fee = max(nums)

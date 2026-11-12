@@ -312,6 +312,10 @@ def extract_facts(state: AgentState) -> dict:                       # box 4
         for name, fact in data.items():
             if not fact["found"]:
                 continue
+            if name == "scholarships":   # drop scholarships for another degree level (e.g. Master's)
+                wrong = WRONG_DEGREE_WORDS.get(state["programme"]["degree"], [])
+                fact["options"] = [o for o in fact["options"]
+                                   if not any(w in o["option"].lower() for w in wrong)]
             fact["complete"] = is_complete(name, fact, keywords,
                                            state["programme"].get("teaching_language", "English"))
             if not fact["value"] and fact["options"]:
@@ -450,8 +454,15 @@ def build_graph():
     return g.compile()
 
 
-def run_agent(programme: dict, profile: dict) -> dict:
-    """Run the whole agent for one programme and one student profile (used by run.py and api.py)."""
-    return build_graph().invoke({"programme": programme,
-                                 "intake": profile["target_intake"],
-                                 "profile": profile})
+def run_agent(programme: dict, profile: dict, live: bool = False) -> dict:
+    """Run the whole agent for one programme and one student profile (used by run.py and api.py).
+    live=True prints each step's trace while the agent works (nice to watch in the API terminal)."""
+    start = {"programme": programme, "intake": profile["target_intake"], "profile": profile}
+    state, printed = None, 0
+    for state in build_graph().stream(start, stream_mode="values"):   # one full state per step
+        log = state.get("log", [])
+        if live:
+            for line in log[printed:]:
+                print(line, flush=True)
+        printed = len(log)
+    return state
